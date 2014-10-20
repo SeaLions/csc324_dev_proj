@@ -6,6 +6,10 @@ public class MyWindow {
    private JFrame mainFrame;
    private JLabel statusLabel;
    private JPanel controlPanel;
+   private JPanel outputPanel;
+   private JButton chooseOutput;
+   private JLabel chooseOutputLabel;
+   private JFileChooser fcOutput;
  
    public MyWindow(){
       statusLabel = new JLabel("",JLabel.CENTER);
@@ -26,7 +30,8 @@ public class MyWindow {
       mainFrame.add(controlPanel);
       mainFrame.setVisible(true);
             
-		setupFileInput();
+      setupFileInput();
+      setupFileOutput();
    }//end MyWindow()
    
    
@@ -43,25 +48,45 @@ public class MyWindow {
 
       mainFrame.setVisible(true);  
    }//end showRunButton() function
-	
    
    private void createKML(){
    
-   
-      File testexists = new File(datapath+"/"+name+".kml");
+      //File testexists = new File(datapath+"/"+name+".kml");
    
    }
    
    
-	private void setupFileInput() {
+    private void setupFileInput() {
 	
+    }
+	
+	
+   public static void main(String[] args){
+  	    MyWindow program = new MyWindow( ); 
+       program.showRunButton();
+   }
+	
+	private void setupFileOutput() {
+		outputPanel = new JPanel();
+		outputPanel.setLayout(new FlowLayout());
+		
+		chooseOutputLabel = new JLabel("Specifiy An Output Directory");
+		outputPanel.add(chooseOutputLabel);
+		
+		chooseOutput = new JButton("Choose");
+		chooseOutput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fcOutput = new JFileChooser();
+				JFrame fileChooser = new JFrame();
+				fileChooser.add(fcOutput);
+				fileChooser.setSize(500,500);
+				fileChooser.setVisible(true);
+			}
+		});
+		outputPanel.add(chooseOutput);
+		
+		outputPanel.setVisible(true);
+		mainFrame.add(outputPanel);
 	}
-	
    
-	public static void main(String[] args){
-  		MyWindow program = new MyWindow( ); 
-      program.showRunButton();
-   }
-   
-
 }
