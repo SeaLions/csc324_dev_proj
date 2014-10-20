@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.PrintWriter;
+import java.io.File;
 
 public class MyWindow {
    private JFrame mainFrame;
@@ -10,6 +12,10 @@ public class MyWindow {
    private JButton chooseOutput;
    private JLabel chooseOutputLabel;
    private JFileChooser fcOutput;
+   
+   //class variable to hold the output filepath
+   //initially set to current directory
+   String datapath = "./"; 
  
    public MyWindow(){
       statusLabel = new JLabel("",JLabel.CENTER);
@@ -40,7 +46,7 @@ public class MyWindow {
       
       runButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            statusLabel.setText("Ok Button clicked.");
+            createKML();
          }          
       });
       
@@ -50,8 +56,25 @@ public class MyWindow {
    }//end showRunButton() function
    
    private void createKML(){
-   
-      //File testexists = new File(datapath+"/"+name+".kml");
+      //string that will hold the initial .kml file
+      String kmlString = "";
+      
+      // Template for generating base .kml example file:
+      kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
+      kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
+      kmlString+= "</kml>"; //end kml tag
+     
+      File fileHandler = new File(datapath+"outfile.kml");
+      fileHandler.getParentFile().mkdirs();
+      
+      try{
+         PrintWriter writer = new PrintWriter(fileHandler);
+         writer.println(kmlString);
+         writer.close();
+         statusLabel.setText("Saved KML file as '" + datapath + "outfile.kml'");
+      }catch (Exception e){
+         statusLabel.setText("There was a problem creating the file.");
+      }
    
    }
    
