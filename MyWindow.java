@@ -1,17 +1,26 @@
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-class MyWindow extends JFrame {
-	public MyWindow() {
-		setTitle("Map Comparison Program");
-		setSize(1000, 800);
-		setLocation(20,20);
+public class MyWindow {
+   private JFrame mainFrame;
+ 
+   public MyWindow(){
+      mainFrame = new JFrame("Java Swing Examples");
+      mainFrame.setSize(800,800);
+      mainFrame.setLayout(new FlowLayout());
+      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
+      mainFrame.setVisible(true);
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setupFileInput();
+   }
+	
+	private void setupFileInput() {
+	
 	}
 	
-	public static void main(String[] args) {
-		JFrame f = new MyWindow( );
-		f.show( );
-	}
+	 public static void main(String[] args){
+  		MyWindow demo = new MyWindow( );    
+   }
+
 }
