@@ -3,6 +3,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.PrintWriter;
 import java.io.File;
+import java.sql.*;
+import java.util.*;
+import java.lang.*;
+import java.text.*;
 
 public class MyWindow {
    private JFrame mainFrame;
@@ -63,15 +67,20 @@ public class MyWindow {
       kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
       kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
       kmlString+= "</kml>"; //end kml tag
-     
-      File fileHandler = new File(datapath+"outfile.kml");
+		
+		//date for file name---
+      java.util.Date date= new java.util.Date();
+		Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String s = formatter.format(date);
+		
+      File fileHandler = new File(datapath + "" + s + "_outfile.kml");
       fileHandler.getParentFile().mkdirs();
       
       try{
          PrintWriter writer = new PrintWriter(fileHandler);
          writer.println(kmlString);
          writer.close();
-         statusLabel.setText("Saved KML file as '" + datapath + "outfile.kml'");
+         statusLabel.setText("Saved KML file as '" + datapath +""+s+ "_outfile.kml'");
       }catch (Exception e){
          statusLabel.setText("There was a problem creating the file.");
       }
