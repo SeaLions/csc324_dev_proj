@@ -3,16 +3,21 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.PrintWriter;
 import java.io.File;
+
 import java.sql.*;
 import java.util.*;
 import java.lang.*;
 import java.text.*;
+
+import java.awt.Desktop;
+import java.io.*;
 
 public class MyWindow {
    private JFrame mainFrame;
    private JLabel statusLabel;
    private JPanel controlPanel;
    private JPanel outputPanel;
+   private JPanel inputPanel;
    private JButton chooseOutput;
    private JLabel chooseOutputLabel;
    private JFileChooser fcOutput;
@@ -26,6 +31,9 @@ public class MyWindow {
 
       controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
+      
+      inputPanel = new JPanel();
+      inputPanel.setLayout(new FlowLayout());
 
       mainFrame = new JFrame("Java Swing Examples");
       mainFrame.setSize(800,800);
@@ -35,15 +43,48 @@ public class MyWindow {
             System.exit(0);
          }
       });
+     
+      
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
       mainFrame.add(statusLabel);
       mainFrame.add(controlPanel);
+      mainFrame.add(inputPanel);
       mainFrame.setVisible(true);
             
       setupFileInput();
       setupFileOutput();
    }//end MyWindow()
    
+   // Method to insert kml files
+   public void getKML() throws IOException {   
+      try{
+         System.out.println(System.getProperty("user.dir")); //Try to get to user home directory
+         String userHomePath = System.getProperty("user.dir");
+         File userHome = new File(userHomePath);
+         Desktop.getDesktop( ).open(userHome); 
+      }catch(Exception e){
+         System.out.println("user.home not found");
+         }
+   } //  Make sure it is a kml file. End getKML method
+   
+   private void showInputButton(){
+      JButton chooseKMLFile = new JButton("Choose Input");
+      
+       chooseKMLFile.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            try{
+             getKML();
+            }catch(Exception E){
+            System.out.println("get KML function not called");
+            }
+
+         } 
+      });  
+      inputPanel.add(chooseKMLFile);
+      
+      mainFrame.setVisible(true);
+   }// end showInputButton() function
+
    
    private void showRunButton(){
       JButton runButton = new JButton("RUN");
@@ -92,10 +133,11 @@ public class MyWindow {
 	
     }
 	
-	
+	// ********************MAIN METHOD**********************
    public static void main(String[] args){
   	    MyWindow program = new MyWindow( ); 
        program.showRunButton();
+       program.showInputButton();
    }
 	
 	private void setupFileOutput() {
