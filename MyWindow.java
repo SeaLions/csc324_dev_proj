@@ -6,6 +6,7 @@ import java.io.File;
 
 public class MyWindow {
    private JFrame mainFrame;
+	private JFrame alertFrame;
    private JLabel statusLabel;
    private JPanel controlPanel;
    private JPanel outputPanel;
@@ -39,7 +40,40 @@ public class MyWindow {
       setupFileInput();
       setupFileOutput();
    }//end MyWindow()
-   
+	
+	
+   public void alertWindow(String message){
+      JLabel alertLabel = new JLabel("Alert",JLabel.CENTER);
+		alertLabel.setText(message);
+		
+		JPanel okPanel = new JPanel();
+		okPanel.setLayout(new FlowLayout());
+		JButton okButton = new JButton("OK");
+      okButton.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) { 
+			 alertFrame.dispose();
+         }          
+      });
+		okPanel.add(okButton);
+
+		alertFrame = new JFrame("Java Swing Examples");
+      alertFrame.setSize(500,150);
+		GridLayout gridLayout = new GridLayout(0,1);
+		alertFrame.setLayout(gridLayout);
+		alertFrame.setTitle("Alert");
+      alertFrame.addWindowListener(new WindowAdapter(){
+         public void windowClosing(WindowEvent windowEvent){
+            System.exit(0);
+         }
+      });
+      alertFrame.setDefaultCloseOperation(alertFrame.HIDE_ON_CLOSE);
+		alertFrame.add(alertLabel);
+		alertFrame.add(okPanel);
+      
+      alertFrame.setVisible(true);
+
+   }//end alertWindow()
+
    
    private void showRunButton(){
       JButton runButton = new JButton("RUN");
@@ -71,9 +105,11 @@ public class MyWindow {
          PrintWriter writer = new PrintWriter(fileHandler);
          writer.println(kmlString);
          writer.close();
-         statusLabel.setText("Saved KML file as '" + datapath + "outfile.kml'");
+			alertWindow("Saved KML file as '" + datapath + "outfile.kml'");
+         //statusLabel.setText("Saved KML file as '" + datapath + "outfile.kml'");
       }catch (Exception e){
-         statusLabel.setText("There was a problem creating the file.");
+			alertWindow("There was a problem creating the file.");
+         //statusLabel.setText("There was a problem creating the file.");
       }
    
    }
@@ -85,7 +121,8 @@ public class MyWindow {
 	
 	
    public static void main(String[] args){
-  	    MyWindow program = new MyWindow( ); 
+  	    MyWindow program = new MyWindow( );
+		 
        program.showRunButton();
    }
 	
@@ -104,8 +141,8 @@ public class MyWindow {
 				fileChooser.add(fcOutput);
 				fileChooser.setSize(500,500);
 				fileChooser.setVisible(true);
-			}
-		});
+				}
+			});
 		outputPanel.add(chooseOutput);
 		
 		outputPanel.setVisible(true);
