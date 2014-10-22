@@ -1,52 +1,65 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.File;
 
-public class MyWindow {
+public class MyWindow
+      implements ActionListener {
+   
    private JFrame mainFrame;
 	private JPanel outputPanel;
-	private JButton chooseOutput;
-	private JLabel chooseOutputLabel;
-	private JFileChooser fcOutput;
+	private JButton chooseOutputButton;
+	private JLabel chooseOutputButtonLabel;
+	private JFileChooser outputDirChooser;
+   private UserInput userInput;
 	
  
    public MyWindow(){
       mainFrame = new JFrame("Java Swing Examples");
       mainFrame.setSize(800,800);
       mainFrame.setLayout(new FlowLayout());
-      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
-      mainFrame.setVisible(true);
+      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
+      userInput = new UserInput();
+		outputDirChooser = new JFileChooser();
+      outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      
 		setupFileInput();
 		setupFileOutput();
-		
+          
+      mainFrame.setVisible(true);
    }
 	
 	private void setupFileInput() {
 	
 	}
-	
+   
+   public void actionPerformed(ActionEvent e) {
+   
+      //Handle open button action.
+      if (e.getSource() == chooseOutputButton) {
+         int returnVal = outputDirChooser.showOpenDialog(mainFrame);
+         
+         if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File directory = outputDirChooser.getSelectedFile();
+            userInput.setOutputDirectory(directory);
+         }
+      }
+   }
+
 	private void setupFileOutput() {
 		outputPanel = new JPanel();
 		outputPanel.setLayout(new FlowLayout());
 		
-		chooseOutputLabel = new JLabel("Specifiy An Output Directory");
-		outputPanel.add(chooseOutputLabel);
+		chooseOutputButtonLabel = new JLabel("Specifiy An Output Directory");
+		outputPanel.add(chooseOutputButtonLabel);
 		
-		chooseOutput = new JButton("Choose");
-		chooseOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				fcOutput = new JFileChooser();
-				JFrame fileChooser = new JFrame();
-				fileChooser.add(fcOutput);
-				fileChooser.setSize(500,500);
-				fileChooser.setVisible(true);
-			}
-		});
-		outputPanel.add(chooseOutput);
+		chooseOutputButton = new JButton("Choose");
+		chooseOutputButton.addActionListener(this);
+		outputPanel.add(chooseOutputButton);
 		
-		outputPanel.setVisible(true);
 		mainFrame.add(outputPanel);
+		outputPanel.setVisible(true);
 		
 	}
 	
