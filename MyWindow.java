@@ -64,7 +64,7 @@ public class MyWindow
 	}
 	
 	 public static void main(String[] args){
-  		MyWindow demo = new MyWindow( );    
+  		MyWindow demo = new MyWindow( );
    }
 
 }
