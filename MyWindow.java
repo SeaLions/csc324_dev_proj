@@ -36,8 +36,10 @@ public class MyWindow {
       inputPanel = new JPanel();
       inputPanel.setLayout(new FlowLayout());
 
-      mainFrame = new JFrame("Java Swing Examples");
+      mainFrame = new JFrame("Compare Signal Coverage");
       mainFrame.setSize(800,800);
+      Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+      mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2, dim.height/2-mainFrame.getSize().height/2);
       mainFrame.setLayout(new FlowLayout());
       mainFrame.addWindowListener(new WindowAdapter(){
          public void windowClosing(WindowEvent windowEvent){
@@ -102,22 +104,22 @@ public class MyWindow {
       });
 		okPanel.add(okButton);
 
-		alertFrame = new JFrame("Java Swing Examples");
+		alertFrame = new JFrame("Alert");
+      //alertFrame.setTitle("Alert");
       alertFrame.setSize(500,150);
-		GridLayout gridLayout = new GridLayout(0,1);
+      Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+      alertFrame.setLocation(dim.width/2-alertFrame.getSize().width/2, dim.height/2-alertFrame.getSize().height);
+      GridLayout gridLayout = new GridLayout(0,1);
 		alertFrame.setLayout(gridLayout);
-		alertFrame.setTitle("Alert");
       alertFrame.addWindowListener(new WindowAdapter(){
          public void windowClosing(WindowEvent windowEvent){
-            System.exit(0);
+            alertFrame.dispose();
          }
       });
-      alertFrame.setDefaultCloseOperation(alertFrame.HIDE_ON_CLOSE);
+      alertFrame.setDefaultCloseOperation(alertFrame.DISPOSE_ON_CLOSE);
 		alertFrame.add(alertLabel);
 		alertFrame.add(okPanel);
-      
       alertFrame.setVisible(true);
-
    }//end alertWindow()
 
 
