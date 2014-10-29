@@ -13,40 +13,34 @@ import java.text.*;
 import java.awt.Desktop;
 import java.io.*;
 
-public class MyWindow
-      implements ActionListener {
+public class MyWindow implements ActionListener {
    
    private JFrame mainFrame;
-
 	private JFrame alertFrame;
    private JLabel statusLabel;
    private JPanel controlPanel;
-   private JPanel outputPanel;
-   private JPanel inputPanel;
-   private JButton chooseOutput;
-   private JLabel chooseOutputLabel, input1, input2;
-   private JFileChooser fcOutput;
-   private File RFPSFile, SignalProFile;//instantiated when kml files are selected on GUI
+	private JPanel outputPanel;
+	private JPanel inputPanel;
+	private JButton runButton, rfpsFileChooseButton, signalProChooseButton, chooseOutputButton;
+	private JLabel rfpsInputLabel, signalProInputLabel, chooseOutputButtonLabel;
+	private JFileChooser fileChooser, outputDirChooser;
+   private File RFPSFile, SignalProFile;
+
+   private UserInput userInput;
    
    //class variable to hold the output filepath
    //initially set to current directory
    String datapath = "./"; 
-
-	private JButton chooseOutputButton, KMLFile1Button, KMLFile2Button;
-	private JLabel chooseOutputButtonLabel;
-	private JFileChooser outputDirChooser;
-   private UserInput userInput;
 	
    public MyWindow(){
+
       statusLabel = new JLabel("",JLabel.CENTER);
 
       controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
-      
-      inputPanel = new JPanel();
-      inputPanel.setLayout(new FlowLayout());
 
-      mainFrame = new JFrame("Compare Signal Coverage");
+      mainFrame = new JFrame("GPS Coordinate Comparison Program");
+
       mainFrame.setSize(800,800);
       Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
       mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2, dim.height/2-mainFrame.getSize().height/2);
@@ -61,7 +55,6 @@ public class MyWindow
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
       mainFrame.add(statusLabel);
       mainFrame.add(controlPanel);
-      mainFrame.add(inputPanel);
       mainFrame.setVisible(true);
             
       setupFileInput();
@@ -81,26 +74,6 @@ public class MyWindow
       return filename;
      
    }// End getKML method
-   
-   //Start showInputButton() function
-   //Method that has 2 buttons to input one kmz and one kml file
-   private void showInputButton(){
-   
-      KMLFile1Button = new JButton("Input RFPS file");//KML button
-      KMLFile1Button.addActionListener(this);
-      KMLFile2Button = new JButton("Input SignalPro file");//KMZ button
-      KMLFile2Button.addActionListener(this);
-        
-      inputPanel.add(KMLFile1Button);
-      input1 = new JLabel("No file chosen");
-      inputPanel.add(input1);
- 
-      inputPanel.add(KMLFile2Button);
-      input2 = new JLabel("No file chosen");
-      inputPanel.add(input2);
-
-      mainFrame.setVisible(true);
-   }//end showInputButton() function
 	
    public void alertWindow(String message){
       JLabel alertLabel = new JLabel("Alert",JLabel.CENTER);
@@ -179,15 +152,40 @@ public class MyWindow
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
       userInput = new UserInput();
+		fileChooser = new JFileChooser();
 		outputDirChooser = new JFileChooser();
       outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       
-		setupFileInput();
+		showInputPanel();
 		setupFileOutput();
           
       mainFrame.setVisible(true);
-
    }
+	
+	//Start showInputButton() function
+   //Method that has 2 buttons to input one kmz and one kml file
+   private void showInputPanel(){
+  		inputPanel = new JPanel();  
+		inputPanel.setLayout(new FlowLayout());
+		
+		runButton = new JButton("RUN"); 
+		inputPanel.add(runButton);
+		
+		rfpsFileChooseButton = new JButton("Input RFPS file");		//KML button
+		inputPanel.add(rfpsFileChooseButton);
+            
+      rfpsInputLabel = new JLabel("No file chosen");
+      inputPanel.add(rfpsInputLabel);
+		
+		signalProChooseButton = new JButton("Input SignalPro file");	//KMZ button
+		inputPanel.add(signalProChooseButton);
+ 
+      signalProInputLabel = new JLabel("No file chosen");
+      inputPanel.add(signalProInputLabel);
+
+      mainFrame.add(inputPanel);
+      inputPanel.setVisible(true);
+   }//end showInputButton() function
    
    private void setupFileInput() {
 	
@@ -205,60 +203,62 @@ public class MyWindow
             userInput.setOutputDirectory(directory);
          }
       }
-      if(e.getSource() == KMLFile1Button){
-         try{
+		else if (e.getSource() == rfpsFileChooseButton) {
+		   try{
              String RFPSName = getKML();
-             input1.setText(RFPSName);
+             rfpsInputLabel.setText(RFPSName);
              RFPSFile = new File(RFPSName);//this is the file to be compared with SignalProFile
              System.out.println("RFPS File Created and saved as 'RFPSFile'");
              }catch(Exception E){
              System.out.println("getKML function not called");
              }
-      }
-      if(e.getSource() == KMLFile2Button){
-         try{
+		}
+		else if (e.getSource() == signalProChooseButton) {
+		   try{
              String SignalProName = getKML();
-             input2.setText(SignalProName);
+             signalProInputLabel.setText(SignalProName);
              SignalProFile = new File(SignalProName);//this is the file to be compared with RFPSFile
              System.out.println("SignalPro File Created and saved as 'SignalProFile'");
 
             }catch(Exception E){
             System.out.println("getKMZ function not called");
             }
-      }
-        
+		}
+		
+		else if (e.getSource() == runButton) {
+		
+		}
+
    }
 
 	private void setupFileOutput() {
 		outputPanel = new JPanel();
 		outputPanel.setLayout(new FlowLayout());
 		
-		chooseOutputLabel = new JLabel("Specify An Output Directory");
-		outputPanel.add(chooseOutputLabel);
+		chooseOutputButtonLabel = new JLabel("Specify An Output Directory");
+		outputPanel.add(chooseOutputButtonLabel);
 		
-		chooseOutput = new JButton("Choose");
-		chooseOutput.addActionListener(new ActionListener() {
+		chooseOutputButton = new JButton("Choose");
+		chooseOutputButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				fcOutput = new JFileChooser();
+				outputDirChooser = new JFileChooser();
 				JFrame fileChooser = new JFrame();
-				fileChooser.add(fcOutput);
+				fileChooser.add(outputDirChooser);
 				fileChooser.setSize(500,500);
 				fileChooser.setVisible(true);
 				}
 			});
-		outputPanel.add(chooseOutput);
+		outputPanel.add(chooseOutputButton);
 						
 		mainFrame.add(outputPanel);
-      outputPanel.setVisible(true);
+
+		outputPanel.setVisible(true);
 	}
 
 	 
 	 // ********************MAIN METHOD**********************
 	 public static void main(String[] args){
   		MyWindow demo = new MyWindow( );
-      
-      demo.showRunButton();
-      demo.showInputButton();
    }
 
 }
