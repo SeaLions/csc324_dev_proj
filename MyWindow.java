@@ -1,207 +1,121 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.PrintWriter;
 import java.io.File;
 
-import java.sql.*;
-import java.util.*;
-import java.lang.*;
-import java.text.*;
-
-import java.awt.Desktop;
-import java.io.*;
-
-public class MyWindow {
+public class MyWindow implements ActionListener {
+   
    private JFrame mainFrame;
-	private JFrame alertFrame;
-   private JLabel statusLabel;
+   private JFrame alertFrame;
+	private JPanel outputPanel;
    private JPanel controlPanel;
-   private JPanel outputPanel;
-   private JPanel inputPanel;
-   private JButton chooseOutput;
-   private JLabel chooseOutputLabel;
-   private JFileChooser fcOutput;
-   
-   //class variable to hold the output filepath
-   //initially set to current directory
-   String datapath = "./"; 
+	private JButton chooseOutputButton;
+	private JLabel chooseOutputButtonLabel;
+	private JFileChooser outputDirChooser;
+    private UserInput userInput;
  
-   public MyWindow(){
-      statusLabel = new JLabel("",JLabel.CENTER);
+    public MyWindow()
+    {
+        statusLabel = new JLabel("",JLabel.CENTER);
 
-      controlPanel = new JPanel();
-		controlPanel.setLayout(new FlowLayout());
+       controlPanel = new JPanel();
+		 controlPanel.setLayout(new FlowLayout());
       
-      inputPanel = new JPanel();
-      inputPanel.setLayout(new FlowLayout());
+       inputPanel = new JPanel();
+       inputPanel.setLayout(new FlowLayout());
 
-      mainFrame = new JFrame("Compare Signal Coverage");
-      mainFrame.setSize(800,800);
-      Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-      mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2, dim.height/2-mainFrame.getSize().height/2);
-      mainFrame.setLayout(new FlowLayout());
-      mainFrame.addWindowListener(new WindowAdapter(){
-         public void windowClosing(WindowEvent windowEvent){
-            System.exit(0);
-         }
-      });
-     
-      
-      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
-      mainFrame.add(statusLabel);
-      mainFrame.add(controlPanel);
-      mainFrame.add(inputPanel);
-      mainFrame.setVisible(true);
-            
-      setupFileInput();
-      setupFileOutput();
-   }//end MyWindow()
-   
-   // Method to insert kml files
-   public void getKML() throws IOException {   
-      try{
-         System.out.println(System.getProperty("user.dir")); //Try to get to user home directory
-         String userHomePath = System.getProperty("user.dir");
-         File userHome = new File(userHomePath);
-         Desktop.getDesktop( ).open(userHome); 
-      }catch(Exception e){
-         System.out.println("user.home not found");
-         }
-   } //  Make sure it is a kml file. End getKML method
-   
-   private void showInputButton(){
-      JButton chooseKMLFile = new JButton("Choose Input");
-      
-       chooseKMLFile.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            try{
-             getKML();
-            }catch(Exception E){
-            System.out.println("get KML function not called");
-            }
-
-         } 
-      });  
-      inputPanel.add(chooseKMLFile);
-      
-      mainFrame.setVisible(true);
-   }// end showInputButton() function
-
-	
-	
-   public void alertWindow(String message){
-      JLabel alertLabel = new JLabel("Alert",JLabel.CENTER);
-		alertLabel.setText(message);
+       mainFrame = new JFrame("Compare Signal Coverage");
+       mainFrame.setSize(800,800);
+       Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+       mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2, dim.height/2-mainFrame.getSize().height/2);
+       mainFrame.setLayout(new FlowLayout());
+       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
-		JPanel okPanel = new JPanel();
-		okPanel.setLayout(new FlowLayout());
-		JButton okButton = new JButton("OK");
-      okButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) { 
-			 alertFrame.dispose();
-         }          
-      });
-		okPanel.add(okButton);
-
-		alertFrame = new JFrame("Alert");
-      //alertFrame.setTitle("Alert");
-      alertFrame.setSize(500,150);
-      Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-      alertFrame.setLocation(dim.width/2-alertFrame.getSize().width/2, dim.height/2-alertFrame.getSize().height);
-      GridLayout gridLayout = new GridLayout(0,1);
-		alertFrame.setLayout(gridLayout);
-      alertFrame.addWindowListener(new WindowAdapter(){
-         public void windowClosing(WindowEvent windowEvent){
-            alertFrame.dispose();
-         }
-      });
-      alertFrame.setDefaultCloseOperation(alertFrame.DISPOSE_ON_CLOSE);
-		alertFrame.add(alertLabel);
-		alertFrame.add(okPanel);
-      alertFrame.setVisible(true);
-   }//end alertWindow()
-
-
-   
-   private void showRunButton(){
-      JButton runButton = new JButton("RUN");
+       userInput = new UserInput();
+		 outputDirChooser = new JFileChooser();
+       outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       
-      runButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            createKML();
-         }          
-      });
-      
-      controlPanel.add(runButton);
-
-      mainFrame.setVisible(true);  
-   }//end showRunButton() function
-   
-   private void createKML(){
-      //string that will hold the initial .kml file
-      String kmlString = "";
-      
-      // Template for generating base .kml example file:
-      kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
-      kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
-      kmlString+= "</kml>"; //end kml tag
-		
-		//date for file name---
-      java.util.Date date= new java.util.Date();
-		Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String s = formatter.format(date);
-		
-      File fileHandler = new File(datapath + "" + s + "_outfile.kml");
-      fileHandler.getParentFile().mkdirs();
-      
-      try{
-         PrintWriter writer = new PrintWriter(fileHandler);
-         writer.println(kmlString);
-         writer.close();
-			alertWindow("Saved KML file as '" + datapath + "outfile.kml'");
-         //statusLabel.setText("Saved KML file as '" + datapath + "outfile.kml'");
-      }catch (Exception e){
-			alertWindow("There was a problem creating the file.");
-         //statusLabel.setText("There was a problem creating the file.");
-      }
-   
+		 setupFileInput();
+  	    setupFileOutput();
+          
+       mainFrame.setVisible(true);
    }
    
    
-    private void setupFileInput() {
+    private void setupFileInput()
+    {
 	
     }
+
 	
-	// ********************MAIN METHOD**********************
-   public static void main(String[] args){
-  	    MyWindow program = new MyWindow( );
+	 // ********************MAIN METHOD**********************
+    public static void main(String[] args)
+    {
+  	     MyWindow program = new MyWindow();
 		 
-       program.showRunButton();
-       program.showInputButton();
-   }
-	
-	private void setupFileOutput() {
-		outputPanel = new JPanel();
-		outputPanel.setLayout(new FlowLayout());
-		
-		chooseOutputLabel = new JLabel("Specifiy An Output Directory");
-		outputPanel.add(chooseOutputLabel);
-		
-		chooseOutput = new JButton("Choose");
-		chooseOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				fcOutput = new JFileChooser();
-				JFrame fileChooser = new JFrame();
-				fileChooser.add(fcOutput);
-				fileChooser.setSize(500,500);
-				fileChooser.setVisible(true);
-				}
-			});
-		outputPanel.add(chooseOutput);
-		
-		outputPanel.setVisible(true);
-		mainFrame.add(outputPanel);
-	}
+        program.showRunButton();
+        program.showInputButton();
+	 }
    
+    public void actionPerformed(ActionEvent e)
+    {
+        //Handle open button action.
+        if (e.getSource() == chooseOutputButton) {
+            int returnVal = outputDirChooser.showOpenDialog(mainFrame);
+         
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File directory = outputDirChooser.getSelectedFile();
+                userInput.setOutputDirectory(directory);
+            }
+        }
+    }
+
+	 private void setupFileOutput()
+    {
+        outputPanel = new JPanel();
+		  outputPanel.setLayout(new FlowLayout());
+		
+		  chooseOutputButtonLabel = new JLabel("Specifiy An Output Directory");
+		  outputPanel.add(chooseOutputButtonLabel);
+		
+		  chooseOutputButton = new JButton("Choose");
+		  chooseOutputButton.addActionListener(this);
+		  outputPanel.add(chooseOutputButton);
+		
+		  mainFrame.add(outputPanel);
+		  outputPanel.setVisible(true);
+    }
+  
+   
+    public void alertWindow(String message)
+    {
+        JLabel alertLabel = new JLabel("Alert",JLabel.CENTER);
+		  alertLabel.setText(message);
+		
+		  JPanel okPanel = new JPanel();
+		  okPanel.setLayout(new FlowLayout());
+		  JButton okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { 
+			       alertFrame.dispose();
+            }          
+        });
+		  okPanel.add(okButton);
+		  alertFrame = new JFrame("Alert");
+        alertFrame.setSize(500,150);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        alertFrame.setLocation(dim.width/2-alertFrame.getSize().width/2, dim.height/2-alertFrame.getSize().height);
+        GridLayout gridLayout = new GridLayout(0,1);
+		  alertFrame.setLayout(gridLayout);
+        alertFrame.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent windowEvent){
+                alertFrame.dispose();
+            }
+        });
+        alertFrame.setDefaultCloseOperation(alertFrame.DISPOSE_ON_CLOSE);
+		  alertFrame.add(alertLabel);
+		  alertFrame.add(okPanel);
+        alertFrame.setVisible(true);
+   }//end alertWindow()
+
 }
