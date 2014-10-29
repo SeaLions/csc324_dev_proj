@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 import java.io.PrintWriter;
 import java.io.File;
 
@@ -12,8 +13,11 @@ import java.text.*;
 import java.awt.Desktop;
 import java.io.*;
 
-public class MyWindow {
+public class MyWindow
+      implements ActionListener {
+   
    private JFrame mainFrame;
+
 	private JFrame alertFrame;
    private JLabel statusLabel;
    private JPanel controlPanel;
@@ -27,7 +31,12 @@ public class MyWindow {
    //class variable to hold the output filepath
    //initially set to current directory
    String datapath = "./"; 
- 
+
+	private JButton chooseOutputButton, KMLFile1Button, KMLFile2Button;
+	private JLabel chooseOutputButtonLabel;
+	private JFileChooser outputDirChooser;
+   private UserInput userInput;
+	
    public MyWindow(){
       statusLabel = new JLabel("",JLabel.CENTER);
 
@@ -42,6 +51,7 @@ public class MyWindow {
       Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
       mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2, dim.height/2-mainFrame.getSize().height/2);
       mainFrame.setLayout(new FlowLayout());
+
       mainFrame.addWindowListener(new WindowAdapter(){
          public void windowClosing(WindowEvent windowEvent){
             System.exit(0);
@@ -76,44 +86,16 @@ public class MyWindow {
    //Method that has 2 buttons to input one kmz and one kml file
    private void showInputButton(){
    
-      JButton KMLFile1 = new JButton("Input RFPS file");//KML button
-      JButton KMLFile2 = new JButton("Input SignalPro file");//KMZ button
-      
-       //Listener for RFPS file button
-       KMLFile1.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            try{
-             String RFPSName = getKML();
-             input1.setText(RFPSName);
-             RFPSFile = new File(RFPSName);//this is the file to be compared with SignalProFile
-             System.out.println("RFPS File Created and saved as 'RFPSFile'");
-            }catch(Exception E){
-            System.out.println("getKML function not called");
-            }
-         } 
-      }); //end listener for RFPS
-      
-       //Listener for SignalPro file button
-       KMLFile2.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            try{
-             String SignalProName = getKML();
-             input2.setText(SignalProName);
-             SignalProFile = new File(SignalProName);//this is the file to be compared with RFPSFile
-             System.out.println("SignalPro File Created and saved as 'SignalProFile'");
-
-             
-            }catch(Exception E){
-            System.out.println("getKMZ function not called");
-            }
-         } 
-      });//end listener for SignalPro
-      
-      inputPanel.add(KMLFile1);
+      KMLFile1Button = new JButton("Input RFPS file");//KML button
+      KMLFile1Button.addActionListener(this);
+      KMLFile2Button = new JButton("Input SignalPro file");//KMZ button
+      KMLFile2Button.addActionListener(this);
+        
+      inputPanel.add(KMLFile1Button);
       input1 = new JLabel("No file chosen");
       inputPanel.add(input1);
  
-      inputPanel.add(KMLFile2);
+      inputPanel.add(KMLFile2Button);
       input2 = new JLabel("No file chosen");
       inputPanel.add(input2);
 
@@ -193,20 +175,60 @@ public class MyWindow {
 			alertWindow("There was a problem creating the file.");
          //statusLabel.setText("There was a problem creating the file.");
       }
+
+      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		
+      userInput = new UserInput();
+		outputDirChooser = new JFileChooser();
+      outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      
+		setupFileInput();
+		setupFileOutput();
+          
+      mainFrame.setVisible(true);
+
    }
    
    private void setupFileInput() {
 	
    }
-	
-	// ********************MAIN METHOD**********************
-   public static void main(String[] args){
-  	    MyWindow program = new MyWindow( );
-		 
-       program.showRunButton();
-       program.showInputButton();
+	     
+//~~~~~~~~~~~~~~~~~~~~~~~~~ACTION PERFORMED Method~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\   
+   public void actionPerformed(ActionEvent e) {
+      System.out.println("action Preformed");
+      //Handle open button action.
+      if (e.getSource() == chooseOutputButton) {
+         int returnVal = outputDirChooser.showOpenDialog(mainFrame);
+         
+         if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File directory = outputDirChooser.getSelectedFile();
+            userInput.setOutputDirectory(directory);
+         }
+      }
+      if(e.getSource() == KMLFile1Button){
+         try{
+             String RFPSName = getKML();
+             input1.setText(RFPSName);
+             RFPSFile = new File(RFPSName);//this is the file to be compared with SignalProFile
+             System.out.println("RFPS File Created and saved as 'RFPSFile'");
+             }catch(Exception E){
+             System.out.println("getKML function not called");
+             }
+      }
+      if(e.getSource() == KMLFile2Button){
+         try{
+             String SignalProName = getKML();
+             input2.setText(SignalProName);
+             SignalProFile = new File(SignalProName);//this is the file to be compared with RFPSFile
+             System.out.println("SignalPro File Created and saved as 'SignalProFile'");
+
+            }catch(Exception E){
+            System.out.println("getKMZ function not called");
+            }
+      }
+        
    }
-	
+
 	private void setupFileOutput() {
 		outputPanel = new JPanel();
 		outputPanel.setLayout(new FlowLayout());
@@ -225,8 +247,19 @@ public class MyWindow {
 				}
 			});
 		outputPanel.add(chooseOutput);
-		
-		outputPanel.setVisible(true);
+						
 		mainFrame.add(outputPanel);
+      outputPanel.setVisible(true);
 	}
+
+	 
+	 // ********************MAIN METHOD**********************
+	 public static void main(String[] args){
+  		MyWindow demo = new MyWindow( );
+      
+      demo.showRunButton();
+      demo.showInputButton();
+   }
+
 }
+
