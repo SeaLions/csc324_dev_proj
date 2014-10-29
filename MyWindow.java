@@ -3,36 +3,60 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.File;
 
-public class MyWindow
-      implements ActionListener {
+public class MyWindow implements ActionListener {
    
    private JFrame mainFrame;
+	private JFrame alertFrame;
+   private JLabel statusLabel;
+   private JPanel controlPanel;
 	private JPanel outputPanel;
-	private JButton chooseOutputButton;
-	private JLabel chooseOutputButtonLabel;
-	private JFileChooser outputDirChooser;
+	private JPanel inputPanel;
+	private JButton runButton, rfpsFileChooseButton, signalProChooseButton, chooseOutputButton;
+	private JLabel rfpsInputLabel, signalProInputLabel, chooseOutputButtonLabel;
+	private JFileChooser fileChooser, outputDirChooser;
    private UserInput userInput;
 	
  
    public MyWindow(){
-      mainFrame = new JFrame("Java Swing Examples");
+      mainFrame = new JFrame("GPS Coordinate Comparison Program");
       mainFrame.setSize(800,800);
       mainFrame.setLayout(new FlowLayout());
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
       userInput = new UserInput();
+		fileChooser = new JFileChooser();
 		outputDirChooser = new JFileChooser();
       outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       
-		setupFileInput();
+		showInputPanel();
 		setupFileOutput();
           
       mainFrame.setVisible(true);
    }
 	
-	private void setupFileInput() {
-	
-	}
+	//Start showInputButton() function
+   //Method that has 2 buttons to input one kmz and one kml file
+   private void showInputPanel(){
+  		inputPanel = new JPanel();  
+		inputPanel.setLayout(new FlowLayout());
+		
+		runButton = new JButton("RUN"); 
+		inputPanel.add(runButton);
+		
+		rfpsFileChooseButton = new JButton("Input RFPS file");		//KML button
+		inputPanel.add(rfpsFileChooseButton);
+            
+      rfpsInputLabel = new JLabel("No file chosen");
+      inputPanel.add(rfpsInputLabel);
+		
+		signalProChooseButton = new JButton("Input SignalPro file");	//KMZ button
+		inputPanel.add(signalProChooseButton);
+ 
+      signalProInputLabel = new JLabel("No file chosen");
+      inputPanel.add(signalProInputLabel);
+
+      mainFrame.add(inputPanel);
+   }//end showInputButton() function
    
    public void actionPerformed(ActionEvent e) {
    
@@ -45,6 +69,19 @@ public class MyWindow
             userInput.setOutputDirectory(directory);
          }
       }
+		
+		else if (e.getSource() == rfpsFileChooseButton) {
+		
+		}
+
+		else if (e.getSource() == signalProChooseButton) {
+		
+		}
+		
+		else if (e.getSource() == runButton) {
+		
+		}
+
    }
 
 	private void setupFileOutput() {
@@ -60,7 +97,6 @@ public class MyWindow
 		
 		mainFrame.add(outputPanel);
 		outputPanel.setVisible(true);
-		
 	}
 	
 	 public static void main(String[] args){
