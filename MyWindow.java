@@ -16,6 +16,7 @@ public class MyWindow implements ActionListener {
 	private JFileChooser fileChooser, outputDirChooser, inputFileChooser;
    private UserInput userInput;
 	private RfpsData rfpsData;
+	private SignalProData signalProData;
 	
  
    public MyWindow(){
@@ -97,6 +98,9 @@ public class MyWindow implements ActionListener {
              String SignalProName = inputFileChooser.getSelectedFile().getName();
              signalProInputLabel.setText(SignalProName);
              System.out.println("SignalPro File Created and saved as "+ SignalProName);
+				 //Testing the readData method in SignalProData
+				 signalProData = new SignalProData();
+				 signalProData.readData(userInput.getSignalProFile());
      			       
 				 }
 			catch(Exception E){
