@@ -1,9 +1,13 @@
-import java.io.File;
+import java.io.*;
 
 public abstract class PlotData
 {
+
    public PlotData()
-   {
-   }
-   public abstract void readData(File plotDataFile);
+	{
+	}
+	
+   public abstract void readData(File plotDataFile) throws IOException;
+	
+	//public abstract <DataStructure> DataStructure getPlotData();
 }

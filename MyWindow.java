@@ -15,6 +15,7 @@ public class MyWindow implements ActionListener {
 	private JLabel rfpsInputLabel, signalProInputLabel, chooseOutputButtonLabel;
 	private JFileChooser fileChooser, outputDirChooser, inputFileChooser;
    private UserInput userInput;
+	private RfpsData rfpsData;
 	
  
    public MyWindow(){
@@ -80,7 +81,9 @@ public class MyWindow implements ActionListener {
              String RFPSName = inputFileChooser.getSelectedFile().getName();
              rfpsInputLabel.setText(RFPSName);
              System.out.println("RFPS File Created and saved as " + RFPSName);
-				 
+				 //Testing the readData method in RfpsData
+				 rfpsData = new RfpsData();
+				 rfpsData.readData(userInput.getRfpsFile());
              }
 			catch(Exception E){
              System.out.println("no file chosen");
@@ -90,7 +93,7 @@ public class MyWindow implements ActionListener {
 		else if (e.getSource() == signalProChooseButton) {
 			try{
 				 inputFileChooser.showOpenDialog(mainFrame);
-				 userInput.setSignalproFile(inputFileChooser.getSelectedFile());
+				 userInput.setSignalProFile(inputFileChooser.getSelectedFile());
              String SignalProName = inputFileChooser.getSelectedFile().getName();
              signalProInputLabel.setText(SignalProName);
              System.out.println("SignalPro File Created and saved as "+ SignalProName);
@@ -104,7 +107,6 @@ public class MyWindow implements ActionListener {
 		else if (e.getSource() == runButton) {
 		
 		}
-
    }
 
 	private void setupFileOutput() {
