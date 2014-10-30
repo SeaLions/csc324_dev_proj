@@ -13,7 +13,7 @@ public class MyWindow implements ActionListener {
 	private JPanel inputPanel;
 	private JButton runButton, rfpsFileChooseButton, signalProChooseButton, chooseOutputButton;
 	private JLabel rfpsInputLabel, signalProInputLabel, chooseOutputButtonLabel;
-	private JFileChooser fileChooser, outputDirChooser;
+	private JFileChooser fileChooser, outputDirChooser, inputFileChooser;
    private UserInput userInput;
 	
  
@@ -27,7 +27,8 @@ public class MyWindow implements ActionListener {
 		fileChooser = new JFileChooser();
 		outputDirChooser = new JFileChooser();
       outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      
+      inputFileChooser = new JFileChooser(); 
+		
 		showInputPanel();
 		setupFileOutput();
           
@@ -47,9 +48,11 @@ public class MyWindow implements ActionListener {
 		inputPanel.add(rfpsFileChooseButton);
             
       rfpsInputLabel = new JLabel("No file chosen");
-      inputPanel.add(rfpsInputLabel);
+      rfpsFileChooseButton.addActionListener(this);    
+		inputPanel.add(rfpsInputLabel);
 		
 		signalProChooseButton = new JButton("Input SignalPro file");	//KMZ button
+		signalProChooseButton.addActionListener(this);  
 		inputPanel.add(signalProChooseButton);
  
       signalProInputLabel = new JLabel("No file chosen");
@@ -71,11 +74,31 @@ public class MyWindow implements ActionListener {
       }
 		
 		else if (e.getSource() == rfpsFileChooseButton) {
-		
+			try{
+				 inputFileChooser.showOpenDialog(mainFrame);
+				 userInput.setRfpsFile(inputFileChooser.getSelectedFile());
+             String RFPSName = inputFileChooser.getSelectedFile().getName();
+             rfpsInputLabel.setText(RFPSName);
+             System.out.println("RFPS File Created and saved as " + RFPSName);
+				 
+             }
+			catch(Exception E){
+             System.out.println("no file chosen");
+             }
 		}
 
 		else if (e.getSource() == signalProChooseButton) {
-		
+			try{
+				 inputFileChooser.showOpenDialog(mainFrame);
+				 userInput.setSignalproFile(inputFileChooser.getSelectedFile());
+             String SignalProName = inputFileChooser.getSelectedFile().getName();
+             signalProInputLabel.setText(SignalProName);
+             System.out.println("SignalPro File Created and saved as "+ SignalProName);
+     			       
+				 }
+			catch(Exception E){
+             System.out.println("no file chosen");
+             }
 		}
 		
 		else if (e.getSource() == runButton) {
