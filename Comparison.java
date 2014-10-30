@@ -11,7 +11,7 @@ public class Comparison
    public Comparison() {
    }
    
-   public void createKmlOutputFile(File userOutputDirectory){
+   public boolean createKmlOutputFile(File userOutputDirectory){
       //string that will hold the initial .kml file
       String kmlString = "";
       
@@ -25,18 +25,21 @@ public class Comparison
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String dateString = formatter.format(date);
       String outputFileName = dateString + "_outfile.kml";
-		
-      File kmlOutputFile = new File(userOutputDirectory.getPath() + "/" + outputFileName);
-      kmlOutputFile.getParentFile().mkdirs();
       
       try {
+		   
+         File kmlOutputFile = new File(userOutputDirectory.getPath() + "/" + outputFileName);
+         kmlOutputFile.getParentFile().mkdirs();
+      
          PrintWriter writer = new PrintWriter(kmlOutputFile);
          writer.println(kmlString);
          writer.close();
       }
       catch (Exception e) {
+         return false;
       }
-   
+      
+      return true;
    }
 }
 
