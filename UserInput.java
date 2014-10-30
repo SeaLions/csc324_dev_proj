@@ -19,12 +19,12 @@ public class UserInput
    public File getRfpsFile() {
       return rfpsFile;
    }
-   
-   public void setSignalproFile(File otherSignalproFile) {
+
+   public void setSignalProFile(File otherSignalproFile) {
       signalproFile = otherSignalproFile;
    }
    
-   public File getSignalproFile() {
+   public File getSignalProFile() {
       return signalproFile;
    }
    

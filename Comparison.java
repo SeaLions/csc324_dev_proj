@@ -4,14 +4,27 @@ import java.sql.*;
 import java.util.*;
 import java.lang.*;
 import java.text.*;
-
+import java.text.Format;
+import java.text.SimpleDateFormat;
+  
 public class Comparison
 {
+   UserInput userInput;
+   RfpsData rfpsData;
+   SignalProData signalProData;
    
-   public Comparison() {
+   public Comparison(UserInput ui)
+   {
+      this.userInput = ui;
+      
+      this.rfpsData = new RfpsData();
+      rfpsData.readData(ui.getRfpsFile());
+      
+      this.signalProData = new SignalProData();
+      signalProData.readData(ui.getSignalProFile());
    }
    
-   public void createKmlOutputFile(File userOutputDirectory){
+   public void createKmlOutputFile(){
       //string that will hold the initial .kml file
       String kmlString = "";
       
@@ -26,7 +39,10 @@ public class Comparison
 		String dateString = formatter.format(date);
       String outputFileName = dateString + "_outfile.kml";
 		
-      File kmlOutputFile = new File(userOutputDirectory.getPath() + "/" + outputFileName);
+
+      //File kmlOutputFile = new File(userOutputDirectory.getPath() + "/" + outputFileName); // Does this need to be here?
+
+      File kmlOutputFile = new File(userInput.getOutputDirectory().getPath() + "/" + outputFileName);
       kmlOutputFile.getParentFile().mkdirs();
       
       try {
@@ -35,8 +51,6 @@ public class Comparison
          writer.close();
       }
       catch (Exception e) {
-      }
-   
+      } 
    }
 }
-
