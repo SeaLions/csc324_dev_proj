@@ -19,7 +19,7 @@ public class MyWindow implements ActionListener {
  
    public MyWindow(){
       mainFrame = new JFrame("GPS Coordinate Comparison Program");
-      mainFrame.setSize(800,800);
+      mainFrame.setSize(1200,1200);
       mainFrame.setLayout(new GridBagLayout());
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
