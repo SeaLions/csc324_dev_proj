@@ -17,9 +17,9 @@ public class Comparison
       
       // Template for generating base .kml example file:
       kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
-      kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
-      kmlString+= "<Placemark id=\"ID\"><name>Test Pin! WOOHOO!</name><visibility>1</visibility><description>This is a test pin. WOOHOO!</description><Point><coordinates></coordinates></Point></Placemark>"; //end kml tag
-      kmlString+= "</kml>";
+      kmlString+= "<kml xmlns=\"http://earth.google.com/kml/2.0\">"; //begin kml tag
+      kmlString+= "<Document><name>KML Example file</name><description>Simple markers</description><Placemark><name>Marker 1</name><description>Test pin! WOOHOO!</description><Point><coordinates>-117.250092,32.717501,0 </coordinates></Point></Placemark></Document>"; 
+      kmlString+= "</kml>";//end kml tag
 		
 		//date for file name---
       java.util.Date date= new java.util.Date();
