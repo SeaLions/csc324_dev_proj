@@ -18,7 +18,8 @@ public class Comparison
       // Template for generating base .kml example file:
       kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
       kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
-      kmlString+= "</kml>"; //end kml tag
+      kmlString+= "<Placemark id=\"ID\"><name>Test Pin! WOOHOO!</name><visibility>1</visibility><description>This is a test pin. WOOHOO!</description><Point><coordinates></coordinates></Point></Placemark>"; //end kml tag
+      kmlString+= "</kml>";
 		
 		//date for file name---
       java.util.Date date= new java.util.Date();
