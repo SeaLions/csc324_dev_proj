@@ -108,7 +108,7 @@ public class MyWindow implements ActionListener {
       constraints.gridy = 4;
       constraints.gridwidth = 2;
       outputLocationLabel = new JLabel("Select an RFPS file, SignalPro file, and output directory.");
-      mainFrame.add(runButton, constraints);
+      mainFrame.add(outputLocationLabel, constraints);
       
    }
    
@@ -129,7 +129,7 @@ public class MyWindow implements ActionListener {
 			try{
 				 inputFileChooser.showOpenDialog(mainFrame);
 				 userInput.setRfpsFile(inputFileChooser.getSelectedFile());
-             String RFPSName = inputFileChooser.getSelectedFile().getAbsolutePath();
+             String RFPSName = inputFileChooser.getSelectedFile().getName();
              rfpsInputLabel.setText(RFPSName);
 				 
              }
