@@ -1,14 +1,19 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+<<<<<<< HEAD
 import java.text.*;
 import java.io.PrintWriter;
 import java.io.File;
 import java.io.IOException;
+=======
+import java.io.File;
+>>>>>>> GUI
 
 public class MyWindow implements ActionListener {
    
    private JFrame mainFrame;
+<<<<<<< HEAD
    private JFrame alertFrame;
 	private JPanel outputPanel;
    private JPanel controlPanel;
@@ -72,84 +77,113 @@ public class MyWindow implements ActionListener {
    }// End getKML method
    
    //Start showInputButton() function
-   //Method that has 2 buttons to input one kmz and one kml file
-   private void showInputButton(){
-   
-      JButton KMLFile1 = new JButton("Input RFPS file");//KML button
-      JButton KMLFile2 = new JButton("Input SignalPro file");//KMZ button
-      
-       //Listener for RFPS file button
-       KMLFile1.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            try{
-             String RFPSName = getKML();
-             input1.setText(RFPSName);
-             RFPSFile = new File(RFPSName);//this is the file to be compared with SignalProFile
-             System.out.println("RFPS File Created and saved as 'RFPSFile'");
-            }catch(Exception E){
-            System.out.println("getKML function not called");
-            }
-         } 
-      }); //end listener for RFPS
-      
-       //Listener for SignalPro file button
-       KMLFile2.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            try{
-             String SignalProName = getKML();
-             input2.setText(SignalProName);
-             SignalProFile = new File(SignalProName);//this is the file to be compared with RFPSFile
-             System.out.println("SignalPro File Created and saved as 'SignalProFile'");
-
-             
-            }catch(Exception E){
-            System.out.println("getKMZ function not called");
-            }
-         } 
-      });//end listener for SignalPro
-      
-      inputPanel.add(KMLFile1);
-      input1 = new JLabel("No file chosen");
-      inputPanel.add(input1);
+=======
+	private JFrame alertFrame;
+   private JLabel statusLabel;
+   private JPanel controlPanel;
+	private JPanel outputPanel;
+	private JPanel inputPanel;
+	private JButton runButton, rfpsFileChooseButton, signalProChooseButton, chooseOutputButton;
+	private JLabel rfpsInputLabel, signalProInputLabel, directoryOutputLabel, outputLocationLabel;
+	private JFileChooser fileChooser, outputDirChooser, inputFileChooser;
+   private UserInput userInput;
+	
  
-      inputPanel.add(KMLFile2);
-      input2 = new JLabel("No file chosen");
-      inputPanel.add(input2);
-
+   public MyWindow(){
+      mainFrame = new JFrame("GPS Coordinate Comparison Program");
+      mainFrame.setSize(1200,1200);
+      mainFrame.setLayout(new GridBagLayout());
+      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		
+      userInput = new UserInput();
+		fileChooser = new JFileChooser();
+		outputDirChooser = new JFileChooser();
+      outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      inputFileChooser = new JFileChooser(); 
+		
+		setupInputOptions();
+		setupOutputOptions();
+      setupRunControls();
+      setupResultsDisplay();
+          
       mainFrame.setVisible(true);
+   }
+	
+	//Start showInputButton() function
+>>>>>>> GUI
+   //Method that has 2 buttons to input one kmz and one kml file
+   private void setupInputOptions(){
+      
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.anchor = GridBagConstraints.LINE_START;
+      
+		rfpsFileChooseButton = new JButton("Input RFPS file");		//KML button
+      rfpsFileChooseButton.addActionListener(this);
+      constraints.gridx = 0;
+      constraints.gridy = 0;
+		mainFrame.add(rfpsFileChooseButton, constraints);
+      
+      rfpsInputLabel = new JLabel("No file chosen");
+      constraints.gridx = 1;
+      constraints.gridy = 0;
+      mainFrame.add(rfpsInputLabel, constraints);
+		
+		signalProChooseButton = new JButton("Input SignalPro file");	//KMZ button
+		signalProChooseButton.addActionListener(this);  
+      constraints.gridx = 0;
+      constraints.gridy = 1;
+		mainFrame.add(signalProChooseButton, constraints);
+ 
+      signalProInputLabel = new JLabel("No file chosen");
+      constraints.gridx = 1;
+      constraints.gridy = 1;
+      mainFrame.add(signalProInputLabel, constraints);
+      
    }//end showInputButton() function
+<<<<<<< HEAD
 	
   
    private void showRunButton(){
       JButton runButton = new JButton("RUN");
+=======
+
+	private void setupOutputOptions() {
+>>>>>>> GUI
       
-      runButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            createKML();
-         }          
-      });
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.anchor = GridBagConstraints.LINE_START;
+		
+		chooseOutputButton = new JButton("Choose Output Directory");
+		chooseOutputButton.addActionListener(this);
+      constraints.gridx = 0;
+      constraints.gridy = 2;
+		mainFrame.add(chooseOutputButton, constraints);
+		
+		directoryOutputLabel = new JLabel("No directory chosen");
+      constraints.gridx = 1;
+      constraints.gridy = 2;
+		mainFrame.add(directoryOutputLabel, constraints);
       
+<<<<<<< HEAD
       controlPanel.add(runButton);
       mainFrame.setVisible(true);  
    }//end showRunButton() function
+=======
+	}
+>>>>>>> GUI
    
-   private void createKML(){
-      //string that will hold the initial .kml file
-      String kmlString = "";
+   private void setupRunControls() {
       
-      // Template for generating base .kml example file:
-      kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
-      kmlString+= "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"; //begin kml tag
-      kmlString+= "</kml>"; //end kml tag
-		
-		//date for file name---
-      java.util.Date date= new java.util.Date();
-		Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String s = formatter.format(date);
-		
-      File fileHandler = new File(datapath + "" + s + "_outfile.kml");
-      fileHandler.getParentFile().mkdirs();
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.anchor = GridBagConstraints.LINE_START;
       
+      constraints.gridx = 0;
+      constraints.gridy = 3;
+      runButton = new JButton("RUN");
+      runButton.addActionListener(this); 
+		mainFrame.add(runButton, constraints);
+      
+<<<<<<< HEAD
       try{
          PrintWriter writer = new PrintWriter(fileHandler);
          writer.println(kmlString);
@@ -160,11 +194,23 @@ public class MyWindow implements ActionListener {
 			alertWindow("There was a problem creating the file.");
          //statusLabel.setText("There was a problem creating the file.");
       }
+=======
+>>>>>>> GUI
    }
    
-   private void setupFileInput() {
-	
+   private void setupResultsDisplay() {
+      
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.anchor = GridBagConstraints.LINE_START;
+      
+      constraints.gridx = 0;
+      constraints.gridy = 4;
+      constraints.gridwidth = 2;
+      outputLocationLabel = new JLabel("Select an RFPS file, SignalPro file, and output directory.");
+      mainFrame.add(outputLocationLabel, constraints);
+      
    }
+<<<<<<< HEAD
 	
 	 // ********************MAIN METHOD**********************
     public static void main(String[] args)
@@ -174,6 +220,10 @@ public class MyWindow implements ActionListener {
         program.showRunButton();
         program.showInputButton();
 	 }
+=======
+   
+   public void actionPerformed(ActionEvent e) {
+>>>>>>> GUI
    
     public void actionPerformed(ActionEvent e)
     {
@@ -181,6 +231,7 @@ public class MyWindow implements ActionListener {
         if (e.getSource() == chooseOutputButton) {
             int returnVal = outputDirChooser.showOpenDialog(mainFrame);
          
+<<<<<<< HEAD
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File directory = outputDirChooser.getSelectedFile();
                 userInput.setOutputDirectory(directory);
@@ -235,5 +286,70 @@ public class MyWindow implements ActionListener {
 		  alertFrame.add(okPanel);
         alertFrame.setVisible(true);
    }//end alertWindow()
+=======
+         if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File directory = outputDirChooser.getSelectedFile();
+            userInput.setOutputDirectory(directory);
+            directoryOutputLabel.setText(directory.getAbsolutePath());
+         }
+      }
+		
+		else if (e.getSource() == rfpsFileChooseButton) {
+			try{
+				 inputFileChooser.showOpenDialog(mainFrame);
+				 userInput.setRfpsFile(inputFileChooser.getSelectedFile());
+             String RFPSName = inputFileChooser.getSelectedFile().getName();
+             rfpsInputLabel.setText(RFPSName);
+				 
+             }
+			catch(Exception E){
+             }
+		}
+
+		else if (e.getSource() == signalProChooseButton) {
+			try{
+				 inputFileChooser.showOpenDialog(mainFrame);
+				 userInput.setSignalproFile(inputFileChooser.getSelectedFile());
+             String SignalProName = inputFileChooser.getSelectedFile().getName();
+             signalProInputLabel.setText(SignalProName);
+     			       
+				 }
+			catch(Exception E){
+             }
+		}
+		
+		else if (e.getSource() == runButton) {
+         
+         if (validUserInput()) {
+         
+   		   Comparison comparison = new Comparison();
+            boolean success = comparison.createKmlOutputFile(userInput.getOutputDirectory());
+            String outputLocationLabelText;
+            if (success) {
+               outputLocationLabelText = "File output to " + userInput.getOutputDirectory().getAbsolutePath();
+            }
+            else {
+               outputLocationLabelText = "Select an RFPS file, SignalPro file, and output directory.";
+            }
+            outputLocationLabel.setText(outputLocationLabelText);
+         }
+		}
+
+   }
+   
+   boolean validUserInput() {
+      if (userInput.getRfpsFile() == null)
+         return false;
+      if (userInput.getSignalproFile() == null)
+         return false;
+      if (userInput.getOutputDirectory() == null)
+         return false;
+      return true;
+   }
+	
+	 public static void main(String[] args){
+  		MyWindow demo = new MyWindow( );
+   }
+>>>>>>> GUI
 
 }
