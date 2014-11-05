@@ -21,6 +21,6 @@ public class TestSuiteRunner {
       for (Failure failure : result.getFailures()) {
          System.out.println(failure.toString());
       }
-      System.out.println(result.wasSuccessful());
+      System.out.println("All Tests Passed: " + result.wasSuccessful());
    }
 } 
