@@ -13,18 +13,18 @@ import org.junit.Test;
 
 public class ComparisonTest {
 
+	String expected = "pass";
+	String actual = "pass";
+
 
    /** Fixture initialization (common initialization
     *  for all tests). **/
-   @Before
-	public void setUp() {
+   @Before public void setUp() {
    }
 
 
-   /** A test that always fails. **/
-   @Test
-	public void defaultTest() {
-      Assert.assertEquals("Default test added by jGRASP. Delete "
-            + "this test once you have added your own.", 0, 1);
+   /** A test that always passes. **/
+   @Test public void defaultTest() {
+      Assert.assertEquals("Default test for template use", expected, actual);
    }
 }
