@@ -1,0 +1,26 @@
+Tx Params
+----------------------------------------
+Frequency (megahertz): 856.1375
+Latitude: 42:43:45.0 N
+Longitude: 94:26:34.0 W
+Transmitter Power (kW): 0.02
+System Loss (dB): 0
+Antenna Height (m Above Ground Level): 61
+Polarization: vertical
+Bandwidth (megahertz): 0.0125
+Antenna Type: Omnidirectional
+
+Rx params
+------------------------
+Frequency, bandwidth, system loss, and polarization are identical to Tx params.
+Receiver Sensitivity: -100.0 dB
+Receiver Noise Figure: 0 dB
+Signal-to-Noise Ratio: 5 dB
+
+
+Calculation Area (for RFPS)
+---------------------------------------------------
+360 azimuths, starting at 0 degrees and ending at 359
+Azimuth length: 100km
+1000 range points, equally spaced between 0km and 100km along each azimuth
+Height above ground level at each range point = 2m

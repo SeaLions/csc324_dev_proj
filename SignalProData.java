@@ -1,5 +1,13 @@
 import java.io.*;
 import org.jsoup.*;
+import java.util.*;
+import java.util.zip.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class SignalProData extends PlotData
 {
@@ -7,11 +15,36 @@ public class SignalProData extends PlotData
    {
       super();
    }
-   public void readData(File signalProFile) throws IOException
+   
+   private void processKml(InputStream input)
    {
+      try {
+         Document kmlTree = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(input);
+         
+      }
+      catch (Exception e) {
+      }
    }
-	/*public  <DataStructure> DataStructure getPlotData()
-	{
-		return DataStructure;
-	}*/
+   
+   public void readData(File signalProFile)
+   {
+      try {
+         ZipFile kmz = new ZipFile(signalProFile);
+         Enumeration<? extends ZipEntry> entries = kmz.entries();
+         while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            System.out.println(entry.getName());
+            if (true) {
+               
+               processKml(kmz.getInputStream(entry));
+               
+               break;
+            }
+         }
+      }
+      catch (IOException e) {
+      }
+      
+      
+	}
 }

@@ -13,21 +13,26 @@ public class RfpsData extends PlotData
       super();
    }
 	
-   public void readData(File rfpsFile) throws IOException
+   public void readData(File rfpsFile)
    {
+		//create Scanner for file and read in all the text as one large string
 		try
 		{
 			/*String rfpsFileText = "";
 			Scanner scanRfpsFile = new Scanner(new BufferedReader(new FileReader(rfpsFile)));
-			while (scanRfpsFile.hasNextLine())
+			//reading ten lines of file into a string to see some data for presentation
+			for (int i =0;i<10;i++)
 			{
 				rfpsFileText += scanRfpsFile.nextLine();
+				rfpsFileText += "\n";
 			}
+
 			System.out.println(rfpsFileText);*/
          Document parsedRfpsFile = Jsoup.parse(rfpsFile, null);
          rfpsCoordinates = parsedRfpsFile.select("coordinates");
          
          System.out.println(rfpsCoordinates); 
+			System.out.println("rfpsFile in plain text "+rfpsFileText);
 		}
 		catch(Exception E)
 		{
@@ -41,6 +46,7 @@ public class RfpsData extends PlotData
       return rfpsCoordinates;
    }
    
+	//possible generic datastructure function 
 	/*public  <DataStructure> DataStructure getPlotData()
 	{
 		return DataStructure;
