@@ -38,9 +38,6 @@ public class Comparison
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String dateString = formatter.format(date);
       String outputFileName = dateString + "_outfile.kml";
-		
-
-      //File kmlOutputFile = new File(userOutputDirectory.getPath() + "/" + outputFileName); // Does this need to be here?
 
       File kmlOutputFile = new File(userInput.getOutputDirectory().getPath() + "/" + outputFileName);
       kmlOutputFile.getParentFile().mkdirs();

@@ -8,7 +8,7 @@ public class RfpsData extends PlotData
       super();
    }
 	
-   public void readData(File rfpsFile) throws IOException
+   public void readData(File rfpsFile)
    {
 		//create Scanner for file and read in all the text as one large string
 		try
