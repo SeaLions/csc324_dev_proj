@@ -5,7 +5,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ 
    ComparisonTest.class,
-	UserInputTest.class
+	UserInputTest.class,
+	RfpsDataTest.class,
+	SignalProDataTest.class
 })
 public class JunitTestSuite {
 
