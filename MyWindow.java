@@ -124,33 +124,34 @@ public class MyWindow implements ActionListener {
       }
 		
 		else if (e.getSource() == rfpsFileChooseButton) {
-			try{
+			try
+         {
 				 inputFileChooser.showOpenDialog(mainFrame);
 				 userInput.setRfpsFile(inputFileChooser.getSelectedFile());
              String RFPSName = inputFileChooser.getSelectedFile().getName();
              rfpsInputLabel.setText(RFPSName);
-				 
-             }
-			catch(Exception E){
-             }
+         }
+			catch(Exception E)
+         {
+         }
 		}
 
 		else if (e.getSource() == signalProChooseButton) {
-			try{
+			try
+         {
 				 inputFileChooser.showOpenDialog(mainFrame);
 				 userInput.setSignalProFile(inputFileChooser.getSelectedFile());
              String SignalProName = inputFileChooser.getSelectedFile().getName();
              signalProInputLabel.setText(SignalProName);
-     			       
-				 }
+		   }
 			catch(Exception E){
-             }
+         }
 		}
 		
 		else if (e.getSource() == runButton) {
          
          if (validUserInput()) {
-         
+            
    		   Comparison comparison = new Comparison(userInput);
             boolean success = comparison.createKmlOutputFile();
             String outputLocationLabelText;
@@ -163,7 +164,7 @@ public class MyWindow implements ActionListener {
             outputLocationLabel.setText(outputLocationLabelText);
          }
 		}
-
+      
    }
    
    boolean validUserInput() {
