@@ -1,6 +1,12 @@
 import java.io.*;
 import java.util.*;
-
+import java.util.zip.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class SignalProData extends PlotData
 {
@@ -8,29 +14,36 @@ public class SignalProData extends PlotData
    {
       super();
    }
-   public void readData(File signalProFile) throws IOException
+   
+   private void processKml(InputStream input)
    {
-	//create Scanner for file and read in all the text as one large string
-	try
-		{
-			String signalProFileText = "";
-			Scanner scanSignalProFile = new Scanner(new BufferedReader(new FileReader(signalProFile)));
-			//reading ten lines of file into a string to see some data for presentation
-			for (int i =0;i<10;i++)
-			{
-				signalProFileText += scanSignalProFile.nextLine();
-				signalProFileText += "\n";
-			}
-			System.out.println("SignalProFile in plain text "+signalProFileText);
-		}
-		catch(Exception E)
-		{
-			System.out.println("Could not scan RFPS file");
-		}	
+      try {
+         Document kmlTree = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(input);
+         
+      }
+      catch (Exception e) {
+      }
    }
-	//possible generic datastructure function 
-	/*public  <DataStructure> DataStructure getPlotData()
-	{
-		return DataStructure;
-	}*/
+   
+   public void readData(File signalProFile)
+   {
+      try {
+         ZipFile kmz = new ZipFile(signalProFile);
+         Enumeration<? extends ZipEntry> entries = kmz.entries();
+         while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            System.out.println(entry.getName());
+            if (true) {
+               
+               processKml(kmz.getInputStream(entry));
+               
+               break;
+            }
+         }
+      }
+      catch (IOException e) {
+      }
+      
+      
+	}
 }

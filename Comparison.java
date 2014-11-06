@@ -9,9 +9,9 @@ import java.text.SimpleDateFormat;
   
 public class Comparison
 {
-   UserInput userInput;
-   RfpsData rfpsData;
-   SignalProData signalProData;
+   private UserInput userInput;
+   private RfpsData rfpsData;
+   private SignalProData signalProData;
    
    public Comparison(UserInput ui)
    {
@@ -24,7 +24,7 @@ public class Comparison
       signalProData.readData(ui.getSignalProFile());
    }
    
-   public void createKmlOutputFile(){
+   public boolean createKmlOutputFile(){
       //string that will hold the initial .kml file
       String kmlString = "";
       
@@ -49,8 +49,10 @@ public class Comparison
          PrintWriter writer = new PrintWriter(kmlOutputFile);
          writer.println(kmlString);
          writer.close();
+         return true;
       }
       catch (Exception e) {
+         return false;
       } 
    }
 }
