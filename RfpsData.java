@@ -1,8 +1,13 @@
 import java.io.*;
 import java.util.*;
-
+import org.jsoup.*;
+import javax.swing.*;
+import org.jsoup.nodes.*;
+import org.jsoup.select.Elements;
+import java.util.Vector;
 public class RfpsData extends PlotData
 {
+   Elements rfpsCoordinates;  
    public RfpsData()
    {
       super();
@@ -12,22 +17,57 @@ public class RfpsData extends PlotData
    {
 		try
 		{
-			String rfpsFileText = "";
+			/*String rfpsFileText = "";
 			Scanner scanRfpsFile = new Scanner(new BufferedReader(new FileReader(rfpsFile)));
 			while (scanRfpsFile.hasNextLine())
 			{
 				rfpsFileText += scanRfpsFile.nextLine();
 			}
-			System.out.println(rfpsFileText);
+			System.out.println(rfpsFileText);*/
+         Document parsedRfpsFile = Jsoup.parse(rfpsFile, null);
+         rfpsCoordinates = parsedRfpsFile.select("coordinates");
+         
+         System.out.println(rfpsCoordinates); 
 		}
 		catch(Exception E)
 		{
 			System.out.println("Could not scan RFPS file");
 		}	
    }
-	
+   
+   //method to get coordinates
+   public Elements getRfpsCoordinates()
+   {
+      return rfpsCoordinates;
+   }
+   
 	/*public  <DataStructure> DataStructure getPlotData()
 	{
 		return DataStructure;
 	}*/
+   public static void main(String[] args)throws IOException
+   {
+      RfpsData rfpsData = new RfpsData();
+   	File testRfpsFile = new File("C:/Users/jmorar567/Desktop/RFPS-SignalPro Test Cases/Bishop/RFPS/MountainousInBishop.kml");
+      rfpsData.readData(testRfpsFile);
+      
+      try
+      {
+         File file = new File("U:/csc324_dev_proj/myfile.txt");
+         FileWriter fileWriter = new FileWriter(file, true);
+         BufferedWriter bufferFileWriter  = new BufferedWriter(fileWriter);
+         Elements testCoordinates = rfpsData.getRfpsCoordinates();
+         System.out.println(testCoordinates);
+         for( Element testCoordinate : testCoordinates)
+         {
+            fileWriter.append(testCoordinate.toString());
+         }
+      }
+      catch (IOException e) 
+      {
+        System.out.println("Did not append");
+      }
+      //System.out.println(testRfpsFile);
+   }
 }
+
