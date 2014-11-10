@@ -10,15 +10,15 @@ import java.text.SimpleDateFormat;
 public class Comparison
 {
    private UserInput userInput;
-   private RfpsData rfpsData;
+   //private RfpsData rfpsData;
    private SignalProData signalProData;
    
    public Comparison(UserInput ui)
    {
       this.userInput = ui;
       
-      this.rfpsData = new RfpsData();
-      rfpsData.readData(ui.getRfpsFile());
+      //this.rfpsData = new RfpsData();
+      //rfpsData.readData(ui.getRfpsFile());
       
       this.signalProData = new SignalProData();
       signalProData.readData(ui.getSignalProFile());
