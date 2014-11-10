@@ -1,79 +1,102 @@
 import java.io.*;
 import java.util.*;
-import org.jsoup.*;
 import javax.swing.*;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
 import java.util.Vector;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+
 public class RfpsData extends PlotData
 {
-   Elements rfpsCoordinates;  
+   private int BEARING_COUNTER = 0;
+   private final int ALL_BEARINGS = 360;
+   private Vector<Vector<String>> rfpsStringBearingVector = new Vector<Vector<String>>(ALL_BEARINGS);
+   private Vector<String> rfpsStringCoordinatesVector = new Vector<String>();
+   
    public RfpsData()
    {
       super();
    }
 	
+   public Vector<Vector<String>> getRfpsMasterVector()
+   {
+      return rfpsStringBearingVector;
+   }
+	
    public void readData(File rfpsFile)
    {
-		//create Scanner for file and read in all the text as one large string
 		try
 		{
-			/*String rfpsFileText = "";
-			Scanner scanRfpsFile = new Scanner(new BufferedReader(new FileReader(rfpsFile)));
-			//reading ten lines of file into a string to see some data for presentation
-			for (int i =0;i<10;i++)
-			{
-				rfpsFileText += scanRfpsFile.nextLine();
-				rfpsFileText += "\n";
-			}
+         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+         DocumentBuilder db = dbf.newDocumentBuilder(); 
+			Document dom = db.parse(rfpsFile);          
+        
+         NodeList nodeList = dom.getElementsByTagName("Folder");
+       
+         //Loop through each <folder> tag element and look at each subtag
+         for (int i = 0; i < nodeList.getLength(); i++)
+         {
+             Node folderSubNode = nodeList.item(i);
+             NodeList test = folderSubNode.getChildNodes();
 
-			System.out.println(rfpsFileText);*/
-         Document parsedRfpsFile = Jsoup.parse(rfpsFile, null);
-         rfpsCoordinates = parsedRfpsFile.select("coordinates");
-         
-         System.out.println(rfpsCoordinates); 
-			System.out.println("rfpsFile in plain text "+rfpsFileText);
-		}
+             for (int x = 0; x < test.getLength(); x++)
+             {
+                Node testNode = test.item(x);
+                
+                //Check to see if tag name is <name> and it has "Bearing" as a text value
+                if (testNode.getNodeName() == "name" && testNode.getTextContent().equals("Bearing - " + BEARING_COUNTER + ".0 T"))
+                {
+                  BEARING_COUNTER++; 
+                  
+                  //Get the next node after <name> which is <Placemark>
+                  Node nextNode = testNode.getNextSibling();
+                  nextNode = nextNode.getNextSibling();
+                  
+                  //Look through <Placemark>
+                  NodeList childNodesOfNextNode = nextNode.getChildNodes();
+                  
+                  //Loop through each <Placemark> tag element and look at each of its subtags
+                  for (int j = 0; j < childNodesOfNextNode.getLength(); j++)
+                  {
+                    
+                     Node placemarkSubNode = childNodesOfNextNode.item(j);
+                      
+                     //If the subtag of <Placemark> is <LineString>, get the coordinates and put them in a vector
+                     if (placemarkSubNode.getNodeName() == "LineString") 
+                     {  
+                       
+                        NodeList childNodesOfLineString = placemarkSubNode.getChildNodes();
+                        
+                        for (int k = 0; k < childNodesOfLineString.getLength(); k++)
+                        {
+                           Node lineStringSubNode = childNodesOfLineString.item(k);
+                           
+									/*If subnodes of <LineString> is <coordinates>, append the values to the 
+									string vector and then append the string vector to the bearing vector*/
+                           if (lineStringSubNode.getNodeName() == "coordinates")
+                           {
+                              rfpsStringCoordinatesVector.add(lineStringSubNode.getTextContent());
+                           }
+                           
+                           if(rfpsStringBearingVector.size() != 360)
+                           {
+                              rfpsStringBearingVector.add(rfpsStringCoordinatesVector);
+                           }
+                        }
+                        
+                     }
+       
+                  }//End of third for loop
+                }//End of first if statement 
+          
+            }//End of second for loop         
+         }//End of first for loop
+         //System.out.println(rfpsStringBearingVector);
+		}//End try
+      
 		catch(Exception E)
 		{
-			System.out.println("Could not scan RFPS file");
-		}	
+			System.out.println("Could not find RFPS file");
+		}		
+		
    }
-   
-   //method to get coordinates
-   public Elements getRfpsCoordinates()
-   {
-      return rfpsCoordinates;
-   }
-   
-	//possible generic datastructure function 
-	/*public  <DataStructure> DataStructure getPlotData()
-	{
-		return DataStructure;
-	}*/
-   public static void main(String[] args)throws IOException
-   {
-      RfpsData rfpsData = new RfpsData();
-   	File testRfpsFile = new File("C:/Users/jmorar567/Desktop/RFPS-SignalPro Test Cases/Bishop/RFPS/MountainousInBishop.kml");
-      rfpsData.readData(testRfpsFile);
-      
-      try
-      {
-         File file = new File("U:/csc324_dev_proj/myfile.txt");
-         FileWriter fileWriter = new FileWriter(file, true);
-         BufferedWriter bufferFileWriter  = new BufferedWriter(fileWriter);
-         Elements testCoordinates = rfpsData.getRfpsCoordinates();
-         System.out.println(testCoordinates);
-         for( Element testCoordinate : testCoordinates)
-         {
-            fileWriter.append(testCoordinate.toString());
-         }
-      }
-      catch (IOException e) 
-      {
-        System.out.println("Did not append");
-      }
-      //System.out.println(testRfpsFile);
-   }
-}
-
+}//End class
