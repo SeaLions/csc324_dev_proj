@@ -17,7 +17,7 @@ public class RfpsData extends PlotData
       super();
    }
 	
-   public Vector<Vector<String>> getRfpsMasterVector()
+   public Vector<Vector<String>> getData()
    {
       return rfpsStringBearingVector;
    }
@@ -29,7 +29,6 @@ public class RfpsData extends PlotData
          DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
          DocumentBuilder db = dbf.newDocumentBuilder(); 
 			Document dom = db.parse(rfpsFile);          
-        
          NodeList nodeList = dom.getElementsByTagName("Folder");
        
          //Loop through each <folder> tag element and look at each subtag

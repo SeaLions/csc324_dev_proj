@@ -15,6 +15,7 @@ public class MyWindow implements ActionListener {
 	private JLabel rfpsInputLabel, signalProInputLabel, directoryOutputLabel, outputLocationLabel;
 	private JFileChooser fileChooser, outputDirChooser, inputFileChooser;
    private UserInput userInput;
+	private RfpsData rfpsData;
 	
  
    public MyWindow(){
@@ -128,11 +129,14 @@ public class MyWindow implements ActionListener {
          {
 				 inputFileChooser.showOpenDialog(mainFrame);
 				 userInput.setRfpsFile(inputFileChooser.getSelectedFile());
+				 rfpsData = new RfpsData();
              String RFPSName = inputFileChooser.getSelectedFile().getName();
              rfpsInputLabel.setText(RFPSName);
+				 rfpsData.readData(userInput.getRfpsFile());
          }
 			catch(Exception E)
          {
+				System.out.println("there was an error in choosing RFPSFile");
          }
 		}
 
