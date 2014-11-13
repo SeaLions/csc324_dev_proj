@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+import java.awt.image.*;
+import javax.imageio.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -55,14 +57,33 @@ public class SignalProData extends PlotData
    }
 	
 	private void processImage(InputStream input)
-	{
-		/*int file_chunk_size = 1024 * 4; //4KBs, written like this to easily change it to 8
-		byte[] buffer = new byte[file_chunk_size];
-		int bytesRead = 0;
-		while ( (bytesRead = read(buffer)) > 0 ) {
-			fileOutputStream.write(buffer, 0, bytesRead);
-		}*/
-
+	{ 
+		try {
+			BufferedImage pngImage = ImageIO.read(input);
+			int height = pngImage.getHeight();
+			int width = pngImage.getWidth();
+			
+			coverage = new ArrayList<ArrayList<Boolean>>();
+						
+			for (int i = 0; i < height; i++)
+			{
+				coverage.add(new ArrayList<Boolean>());
+				for (int j = 0; j < width; j++)
+				{
+					coverage.get(i).add(false);
+					int pixel = pngImage.getRGB(j,i);
+					if ((pixel>>24) != 0x00)
+						coverage.get(i).set(j, true);
+					//System.out.print(coverage.get(i).get(j) == true ? 'X' : ' ');
+				}
+				//System.out.println();
+			} 
+			
+			
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
 	}
    
    public void readData(File signalProFile)
@@ -82,12 +103,40 @@ public class SignalProData extends PlotData
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				if (entry.getName().equals(imageFileName)) {
-					processImage(kmz.getInputStream(entry));					
+					processImage(kmz.getInputStream(entry));
+					break;					
 				}
 			}
       }
       catch (IOException e) {
 			System.out.println(e);
       }
+	}
+	
+	public boolean isCoverageNear(double longitude, double latitude) {
+		int longPixel = nearestPixelToLongitude(longitude);
+		int latPixel = nearestPixelToLatitude(latitude);
+		if (longPixel == -1 || latPixel == -1) return false;
+		return coverage.get(longPixel).get(latPixel);
+	}
+	
+	private int nearestPixelToLongitude(double longitude) {
+		double pixelUnit = (northCoord - southCoord)/coverage.get(0).size();
+		double pixelLongitude = northCoord + pixelUnit/2;
+		for (int pixel = 0; pixel < coverage.size(); ++pixel) {
+			if (pixelLongitude + pixelUnit > longitude)
+				return pixel;
+		}
+		return -1;
+	}
+	
+	private int nearestPixelToLatitude(double latitude) {
+		double pixelUnit = (eastCoord - westCoord)/coverage.size();
+		double pixelLatitude = westCoord + pixelUnit/2;
+		for (int pixel = 0; pixel < coverage.size(); ++pixel) {
+			if (pixelLatitude + pixelUnit > latitude)
+				return pixel;
+		}
+		return -1;
 	}
 }
