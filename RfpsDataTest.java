@@ -27,7 +27,7 @@ public class RfpsDataTest
 	int expected;
 	int actual;
    RfpsData rfpsData;
-   File fullSizeTestKml,bearingTestKml,twoBearingTestKml,wrongFileType;
+   File fullSizeTestKml,bearingTestKml,twoBearingTestKml;
 	
    
    /** Fixture initialization (common initialization
@@ -40,10 +40,9 @@ public class RfpsDataTest
 		
       try
       {
-         bearingTestKml = new File("bearingTestKml.kml");
-			twoBearingTestKml = new File("twoBearingTestKml.kml");
-	      wrongFileType = new File("fakeFile.doc");
-			fullSizeTestKml = new File("fullSizeTestKml.kml");
+         fullSizeTestKml = new File ("fullSizeTestKml.kml");
+         bearingTestKml = new File ("bearingTestKml.kml");
+         twoBearingTestKml = new File("twoBearingTestKml.kml");
       }
       catch(Exception E)
       {
@@ -53,20 +52,21 @@ public class RfpsDataTest
 	//not yet implemented
 	@Test public void wrongFileTypeTest()
 	{
-		//create an instance where user selects the wrong type of file, and see how readData deals with this
-		//Assert(rfpsData.readData(wrongFileType);
+		
 		
 	}
 	//Test that checks single bearing coordinates that has three  
 	@Test public void TestABearingsCoordinates()
 	{
 		rfpsData.readData(bearingTestKml);
-		
+		System.out.println(rfpsData.getData());
 		Vector<String> bearingTestVector = new Vector<String>();
 		
 		bearingTestVector.add("-118.377330,37.266580,2.0 -118.377330,37.489291,2.0 ");
 		bearingTestVector.add("-118.377330,37.492557,2.0 -118.377330,37.507514,2.0 ");
 		bearingTestVector.add("-118.377330,37.541481,2.0 -118.377330,37.543494,2.0 ");
+      
+      Assert.assertEquals(bearingTestVector,rfpsData.getData().get(0));
 		
 	}
 	//Test that tests two bearing coordinates should be a vector of size two with vector of strings each vector of strings has three strings representing coordinates in it. 
@@ -106,8 +106,7 @@ public class RfpsDataTest
 	//Testing first coordinate in a kml file equals first coordinate of first bearing
 	@Test public void TestFirstCoordinateOfKML()
 	{
-		String FirstCoordinate= "-118.377330,39.068387,0.000 -118.678860,39.052595,0.000 -118.974841,39.005509,0.000 -119.259852,38.927996,0.000 -119.528713,38.821477,0.000 -119.776600,38.687897,0.000 -119.999142,38.529683,0.000 -120.192505,38.349691,0.000 -120.353455,38.151147,0.000 -120.479409,37.937579,0.000 -120.568461,37.712751,0.000 -120.619398,37.480590,0.000 -120.631696,37.245113,0.000 -120.605503,37.010358,0.000 -120.541616,36.780311,0.000 -120.441438,36.558847,0.000 -120.306940,36.349664,0.000 -120.140611,36.156228,0.000 -119.945403,35.981720,0.000 -119.724677,35.828992,0.000 -119.482149,35.700526,0.000 -119.221824,35.598399,0.000 -118.947947,35.524258,0.000 -118.664937,35.479292,0.000 -118.377330,35.464223,0.000 -118.089723,35.479292,0.000 -117.806713,35.524258,0.000 -117.532836,35.598399,0.000 -117.272511,35.700526,0.000 -117.029983,35.828992,0.000 -116.809257,35.981720,0.000 -116.614049,36.156228,0.000 -116.447720,36.349664,0.000 -116.313222,36.558847,0.000 -116.213044,36.780311,0.000 -116.149157,37.010358,0.000 -116.122964,37.245113,0.000 -116.135262,37.480590,0.000 -116.186199,37.712751,0.000 -116.275251,37.937579,0.000 -116.401205,38.151147,0.000 -116.562155,38.349691,0.000 -116.755518,38.529683,0.000 -116.978060,38.687897,0.000 -117.225947,38.821477,0.000 -117.494808,38.927996,0.000 -117.779819,39.005509,0.000 -118.075800,39.052595,0.000 -118.377330,39.068387,0.000 ";
-		
+		String FirstCoordinate= "-118.377330,37.266580,2.0 -118.377330,37.489291,2.0 ";
 		rfpsData.readData(fullSizeTestKml);
 		Assert.assertEquals(FirstCoordinate,rfpsData.getData().get(0).get(0));
 	}
