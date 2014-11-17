@@ -76,11 +76,17 @@ public class Comparison
                //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon,double angle, double distanceChangeFromOrigin)
                PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit, angle, distH, it));
             }
+            System.out.println("-------------------"+partitions+"--------------------");
             for(int i=0;i<partitions;i++)
             {
+               //test-----
+               System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
+               
                boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0]);
+               
                afterCompare[largeLoop][master][0]=PTSarr.get(i)[0];
                afterCompare[largeLoop][master][1]=PTSarr.get(i)[1];
+               
                if(correlation)
                   afterCompare[largeLoop][master][2]=1;
                else
