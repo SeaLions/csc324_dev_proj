@@ -1,0 +1,87 @@
+<Folder>
+            <name>Height AGL - 2 (m)</name>
+            <Folder>
+              <name>Bearing - 0.0 T</name>
+              <Placemark>
+                <name>118.377330W - 37.266580N to 118.377330W - 37.489291N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-118.377330,37.266580,2.0 -118.377330,37.489291,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+				  <Placemark>
+                <name>118.377330W - 37.492557N to 118.377330W - 37.507514N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-118.377330,37.492557,2.0 -118.377330,37.507514,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+              <Placemark>
+                <name>118.377330W - 37.541481N to 118.377330W - 37.543494N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-118.377330,37.541481,2.0 -118.377330,37.543494,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+				</Folder>
+        <Folder>
+              <name>Bearing - 1.0 T</name>
+              <Placemark>
+                <name>118.377330W - 37.266580N to 118.377330W - 37.489291N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-81.775640,27.343390,2.0 -81.769918,27.635348,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+          <Placemark>
+                <name>118.377330W - 37.492557N to 118.377330W - 37.507514N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-81.769892,27.636685,2.0 -81.769507,27.656251,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+              <Placemark>
+                <name>118.377330W - 37.541481N to 118.377330W - 37.543494N</name>
+                <Style>
+                  <LineStyle>
+                    <color>3fffff01</color>
+                    <width>3</width>
+                  </LineStyle>
+                </Style>
+                <LineString>
+                  <altitudeMode>relativeToGround</altitudeMode>
+                  <coordinates>-81.769484,27.657442,2.0 -81.769398,27.661800,2.0 </coordinates>
+                </LineString>
+              </Placemark>
+        </Folder>
+</Folder>
