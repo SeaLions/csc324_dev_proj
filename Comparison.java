@@ -82,7 +82,7 @@ public class Comparison
                //test-----
                System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
                
-               boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0]);
+               boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0],100);
                
                afterCompare[largeLoop][master][0]=PTSarr.get(i)[0];
                afterCompare[largeLoop][master][1]=PTSarr.get(i)[1];
