@@ -82,7 +82,7 @@ public class Comparison
                //test-----
                System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
                
-               boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0]);
+               boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0],100);
                
                afterCompare[largeLoop][master][0]=PTSarr.get(i)[0];
                afterCompare[largeLoop][master][1]=PTSarr.get(i)[1];
@@ -170,17 +170,104 @@ public class Comparison
    }
    
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone closed
-   
+
+  
    public boolean createKmlOutputFile()
    {
+      
       //string that will hold the initial .kml file
       String kmlString = "";
       
-      // Template for generating base .kml example file:
-      kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
-      kmlString+= "<kml xmlns=\"http://earth.google.com/kml/2.0\">"; //begin kml tag
-      kmlString+= "<Document><name>KML Example file</name><description>Simple markers</description><Placemark><name>Marker 1</name><description>Test pin! WOOHOO!</description><Point><coordinates>-117.250092,32.717501,0 </coordinates></Point></Placemark></Document>"; 
-      kmlString+= "</kml>";//end kml tag
+      String sameString = "";
+      String diffString = "";
+      String inconString = "";
+      
+		String kmlBeginTag = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"; //begin tag
+		String kmlTypeTag = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; //begin kml tag
+		String kmlEndTag = "</kml>"; //end kml tag
+      
+      String docStartTag = "\t<Document>\n";
+      String docEndTag = "\t</Document>\n";
+      String folderStartTag = "\t\t<Folder>\n";
+      String folderEndTag = "\t\t</Folder>\n";
+      
+      
+      //Formating points with similar singal coverage for kml
+      sameString = folderStartTag+
+                   "\t\t\t<name>Similar Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage is the same.</description>\n"+
+                   //"\t\t\t<Placemark>\n"+
+                   //   "\t\t\t\t<name>Placemark 1</name>\n"+
+                   //   "\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                   //   "\t\t\t\t<Point>\n"+
+                   //      "\t\t\t\t\t<coordinates>-117.250092,32.717501,0 </coordinates>\n"+
+                   //   "\t\t\t\t</Point>\n"+
+                   //"\t\t\t</Placemark>\n"+
+                   folderEndTag;
+
+      //Formating points with different singal coverage for kml
+      diffString = folderStartTag+
+                   "\t\t\t<name>Difference in Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage is different.</description>\n";
+                   //folderEndTag;
+                   
+      //Formating points with inconclusive singal coverage for kml
+      inconString = folderStartTag+
+                    "\t\t\t<name>Inconclusive Coverage</name>\n"+
+                    "\t\t\t<description>Signal Coverage is inconclusive.</description>\n";
+                    //folderEndTag;
+						  
+						  
+		//loop through Compare vector and populate strings accordingly
+		for(int i = 0; i < afterCompare.length; i++){
+			for(int j = 0; j < afterCompare[i].length; j++){
+				if(afterCompare[i][j][2] == 1){
+					//rfps and signal pro coverage match
+					   sameString+= "\t\t\t<Placemark>\n"+
+                      //"\t\t\t\t<name>Placemark 2</name>\n"+
+                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+afterCompare[i][j][1]+","+afterCompare[i][j][0]+",0 </coordinates>\n"+
+                      "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";
+				}
+				else{
+					//the coverage doesn't match
+						diffString+= "\t\t\t<Placemark>\n"+
+                      //"\t\t\t\t<name>Placemark 2</name>\n"+
+                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+afterCompare[i][j][1]+","+afterCompare[i][j][0]+",0 </coordinates>\n"+
+                      "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";					
+				}
+			}
+		}
+		
+		//end the folders for the same and different strings
+		sameString = folderEndTag;
+		diffString = folderEndTag;
+						  
+      
+      // Generating complete output .kml file
+      kmlString+= kmlBeginTag;
+      kmlString+= kmlTypeTag;
+      kmlString+= docStartTag+"\t\t<name>KML Output</name>\n";
+                     //default test point
+                     //"\t\t<description>Simple markers</description>\n"+
+                     //"\t\t<Placemark>\n"+
+                     //   "\t\t\t<name>Point Loma Nazarene University</name>\n"+
+                     //   "\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     //   "\t\t\t<Point>\n"+
+                     //      "\t\t\t\t<coordinates>-117.250092,32.717501,0 </coordinates>\n"+
+                     //   "\t\t\t</Point>\n"+
+                     //"\t\t</Placemark>\n";
+      kmlString+=  sameString;
+      kmlString+=  diffString;
+      kmlString+=  inconString;
+      kmlString+= docEndTag;
+      kmlString+= kmlEndTag;
+
 		
 		//date for file name---
       java.util.Date date= new java.util.Date();
