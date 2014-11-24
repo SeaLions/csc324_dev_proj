@@ -110,10 +110,11 @@ public class RfpsDataTest
 		rfpsData.readData(fullSizeTestKml);
 		Assert.assertEquals(FirstCoordinate,rfpsData.getData().get(0).get(0));
 	}
-   
-   @Test public void printStatement()
+   //testing coverage near point method for 1 point
+   @Test public void TestCoverageNearPointMethod()
 	{
       rfpsData.readData(fullSizeTestKml);
+      //this point Lat,Lon was taken from printing out one of the points of PTSarr from fullSizeTestKml
  		boolean testAPoint = rfpsData.coverageNearPoint(-118.37733, 37.28093499263958, 10.0);
       Assert.assertEquals(true,testAPoint);
 	}
