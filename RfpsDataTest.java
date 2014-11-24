@@ -48,13 +48,13 @@ public class RfpsDataTest
       {
          System.out.println("one of the kml files was not found");
       }   
-   }
+   }/*
 	//not yet implemented
 	@Test public void wrongFileTypeTest()
 	{
 		
 		
-	}
+	}*/
 	//Test that checks single bearing coordinates that has three  
 	@Test public void TestABearingsCoordinates()
 	{
@@ -110,7 +110,14 @@ public class RfpsDataTest
 		rfpsData.readData(fullSizeTestKml);
 		Assert.assertEquals(FirstCoordinate,rfpsData.getData().get(0).get(0));
 	}
-	
+   
+   @Test public void printStatement()
+	{
+      rfpsData.readData(fullSizeTestKml);
+ 		boolean testAPoint = rfpsData.coverageNearPoint(-118.37733, 37.28093499263958, 10.0);
+      Assert.assertEquals(true,testAPoint);
+	}
+
 }
 
 	
