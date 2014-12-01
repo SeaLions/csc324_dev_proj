@@ -9,6 +9,19 @@ import java.text.SimpleDateFormat;
   
 public class Comparison
 {
+   //compare constants
+   private final int SAME = 1;
+   private final int ONLY_RFPS = 2;
+   private final int ONLY_SIGPRO = 3;
+   private final int INCONCLUSIVE = 4;
+   
+   //KML strings
+   private String sameString;
+   private String diffRFPSString;
+   private String diffSignalProString;
+   private String inconclusiveString;
+   
+   
    private UserInput userInput;
    private RfpsData rfpsData;
    private SignalProData signalProData;
@@ -20,11 +33,16 @@ public class Comparison
    {
       this.userInput = ui;
       
-      
       this.rfpsData = new RfpsData();
       rfpsData.readData(ui.getRfpsFile());
       this.signalProData = new SignalProData();
       signalProData.readData(ui.getSignalProFile());
+      
+      //initialize the kml strings
+      sameString = "";
+      diffRFPSString = "";
+      diffSignalProString = "";
+      inconclusiveString = "";
       
       compare();
    }
@@ -171,6 +189,56 @@ public class Comparison
    
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone closed
 
+
+
+   public void addKMLPoint(Coordinate newCoord){
+      switch (newCoord.compare) {
+         case SAME:
+            //coverage matches in signal pro and RFPS
+            sameString+= "\t\t\t<Placemark>\n"+
+                     //"\t\t\t\t<name>Placemark 2</name>\n"+
+                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     "\t\t\t\t<Point>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                     "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";
+            break;
+         case ONLY_RFPS:
+            //the coverage only in RFPS
+   			diffRFPSString+= "\t\t\t<Placemark>\n"+
+                     //"\t\t\t\t<name>Placemark 2</name>\n"+
+                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     "\t\t\t\t<Point>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                     "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";				
+            break;
+         case ONLY_SIGPRO:
+            //the coverage only in signal pro
+            diffSignalProString+= "\t\t\t<Placemark>\n"+
+                      //"\t\t\t\t<name>Placemark 2</name>\n"+
+                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                      "\t\t\t\t</Point>\n"+
+                   "\t\t\t</Placemark>\n";
+            break;
+         case INCONCLUSIVE:
+            //the coverage inconclusive
+            inconclusiveString+= "\t\t\t<Placemark>\n"+
+                      //"\t\t\t\t<name>Placemark 2</name>\n"+
+                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                      "\t\t\t\t</Point>\n"+
+                   "\t\t\t</Placemark>\n";
+            break;
+         default:
+            //do nothing
+            break;
+       }//end switch
+   }//end addKMLPoint()
+   
   
    public boolean createKmlOutputFile()
    {
@@ -178,11 +246,7 @@ public class Comparison
       //string that will hold the initial .kml file
       String kmlString = "";
       
-      String sameString = "";
-      String diffString = "";
-      String inconString = "";
-      
-		String kmlBeginTag = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"; //begin tag
+      String kmlBeginTag = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"; //begin tag
 		String kmlTypeTag = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; //begin kml tag
 		String kmlEndTag = "</kml>"; //end kml tag
       
@@ -191,9 +255,8 @@ public class Comparison
       String folderStartTag = "\t\t<Folder>\n";
       String folderEndTag = "\t\t</Folder>\n";
       
-      
       //Formating points with similar singal coverage for kml
-      sameString = folderStartTag+
+      String finalSameString = folderStartTag+
                    "\t\t\t<name>Similar Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is the same.</description>\n"+
                    //"\t\t\t<Placemark>\n"+
@@ -203,68 +266,39 @@ public class Comparison
                    //      "\t\t\t\t\t<coordinates>-117.250092,32.717501,0 </coordinates>\n"+
                    //   "\t\t\t\t</Point>\n"+
                    //"\t\t\t</Placemark>\n"+
+                   sameString+
                    folderEndTag;
 
-      //Formating points with different singal coverage for kml
-      diffString = folderStartTag+
+      //Formating points where only RFPS had singal coverage for kml
+      String finalDiffRFPSString = folderStartTag+
                    "\t\t\t<name>Difference in Coverage</name>\n"+
-                   "\t\t\t<description>Signal Coverage is different.</description>\n";
-                   //folderEndTag;
-                   
+                   "\t\t\t<description>Signal Coverage only in RFPS.</description>\n"+
+                   diffRFPSString+
+                   folderEndTag;
+
+      //Formating points where only SignalPro had singal coverage for kml
+      String finalDiffRFPSString = folderStartTag+
+                   "\t\t\t<name>Difference in Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage only in SignalPro.</description>\n"+
+                   diffSignalProString+
+                   folderEndTag;
+
       //Formating points with inconclusive singal coverage for kml
-      inconString = folderStartTag+
+      String finalInconclusiveString = folderStartTag+
                     "\t\t\t<name>Inconclusive Coverage</name>\n"+
-                    "\t\t\t<description>Signal Coverage is inconclusive.</description>\n";
-                    //folderEndTag;
-						  
-						  
-		//loop through Compare vector and populate strings accordingly
-		for(int i = 0; i < afterCompare.length; i++){
-			for(int j = 0; j < afterCompare[i].length; j++){
-				if(afterCompare[i][j][2] == 1){
-					//rfps and signal pro coverage match
-					   sameString+= "\t\t\t<Placemark>\n"+
-                      //"\t\t\t\t<name>Placemark 2</name>\n"+
-                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                      "\t\t\t\t<Point>\n"+
-                         "\t\t\t\t\t<coordinates>"+afterCompare[i][j][1]+","+afterCompare[i][j][0]+",0 </coordinates>\n"+
-                      "\t\t\t\t</Point>\n"+
-                  "\t\t\t</Placemark>\n";
-				}
-				else{
-					//the coverage doesn't match
-						diffString+= "\t\t\t<Placemark>\n"+
-                      //"\t\t\t\t<name>Placemark 2</name>\n"+
-                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                      "\t\t\t\t<Point>\n"+
-                         "\t\t\t\t\t<coordinates>"+afterCompare[i][j][1]+","+afterCompare[i][j][0]+",0 </coordinates>\n"+
-                      "\t\t\t\t</Point>\n"+
-                  "\t\t\t</Placemark>\n";					
-				}
-			}
-		}
-		
-		//end the folders for the same and different strings
-		sameString = folderEndTag;
-		diffString = folderEndTag;
-						  
+                    "\t\t\t<description>Signal Coverage is inconclusive.</description>\n"+
+                    inconclusiveString+
+                    folderEndTag;
+						  						  
       
       // Generating complete output .kml file
       kmlString+= kmlBeginTag;
       kmlString+= kmlTypeTag;
       kmlString+= docStartTag+"\t\t<name>KML Output</name>\n";
-                     //default test point
-                     //"\t\t<description>Simple markers</description>\n"+
-                     //"\t\t<Placemark>\n"+
-                     //   "\t\t\t<name>Point Loma Nazarene University</name>\n"+
-                     //   "\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                     //   "\t\t\t<Point>\n"+
-                     //      "\t\t\t\t<coordinates>-117.250092,32.717501,0 </coordinates>\n"+
-                     //   "\t\t\t</Point>\n"+
-                     //"\t\t</Placemark>\n";
-      kmlString+=  sameString;
-      kmlString+=  diffString;
-      kmlString+=  inconString;
+      kmlString+=  finalSameString;
+      kmlString+=  finalDiffRFPSString;
+      kmlString+=  finalDiffSignalProString;
+      kmlString+=  finalInconclusiveString;
       kmlString+= docEndTag;
       kmlString+= kmlEndTag;
 

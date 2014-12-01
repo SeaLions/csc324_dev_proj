@@ -37,11 +37,12 @@ public class RfpsData extends PlotData
       //Loop through each <folder> tag element and look at each subtag
          for (int i = 0; i < folderNodeList.getLength(); i++)
          {
+             
              //Get a <folder> node
              Node folderSubNode = folderNodeList.item(i);
-             Element folderElement = (Element)folderSubNode;
-             //get the first 'name' element of the <folder> tag 
-             Node nameNode = folderElement.getElementsByTagName("name").item(0);
+             
+             //get the child nodes of the <folder> tag
+             NodeList folderSubNodeList = folderSubNode.getChildNodes();
              rfpsStringCoordinatesVector = new Vector<String>();
              if(nameNode.getTextContent().contains("Bearing"))
              {
@@ -55,26 +56,26 @@ public class RfpsData extends PlotData
                    //grab a child node from the <folder> tag
                    Node testNode = folderSubNodeList.item(x);
                    
-                   //testing to see if Folder has "Placemark value and seeing if name of that placemark identifies it as a Bearing 
-                   if(testNode.getNodeName() == "Placemark")
+                   for (int j = 0; j < placeMarkChildren.getLength(); j++)
                    {
+                     
+                     Node placemarkSubNode = placeMarkChildren.item(j);
                       
-                      NodeList placeMarkChildren = testNode.getChildNodes();
-                      
-                      for (int j = 0; j < placeMarkChildren.getLength(); j++)
-                      {
+                     //If the subtag of <Placemark> is <LineString>, get the coordinates and put them in a vector
+                     if (placemarkSubNode.getNodeName() == "LineString") 
+                     {  
+                       
+                        NodeList childNodesOfLineString = placemarkSubNode.getChildNodes();
                         
-                        Node placemarkSubNode = placeMarkChildren.item(j);
-                         
-                        //If the subtag of <Placemark> is <LineString>, get the coordinates and put them in a vector
-                        if (placemarkSubNode.getNodeName() == "LineString") 
-                        {  
-                          
-                           NodeList childNodesOfLineString = placemarkSubNode.getChildNodes();
+                        for (int k = 0; k < childNodesOfLineString.getLength(); k++)
+                        {
+                           Node lineStringSubNode = childNodesOfLineString.item(k);
                            
-                           for (int k = 0; k < childNodesOfLineString.getLength(); k++)
-                           {
-                              Node lineStringSubNode = childNodesOfLineString.item(k);
+									/*If subnodes of <LineString> is <coordinates>, append the values to the 
+									string vector and then append the string vector to the bearing vector*/
+                           if (lineStringSubNode.getNodeName() == "coordinates")
+                           {   
+                              rfpsStringCoordinatesVector.add(lineStringSubNode.getTextContent()); 
                               
    									/*If subnodes of <LineString> is <coordinates>, append the values to the 
    									string vector and then append the string vector to the bearing vector*/
