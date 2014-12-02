@@ -190,7 +190,6 @@ public class Comparison
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone closed
 
 
-
    public void addKMLPoint(Coordinate newCoord){
       switch (newCoord.getCoverage()) {
          case SAME:
@@ -198,7 +197,7 @@ public class Comparison
             sameString+= "\t\t\t<Placemark>\n"+
                      //"\t\t\t\t<name>Placemark 2</name>\n"+
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                     "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>"+
+                     "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
@@ -209,7 +208,7 @@ public class Comparison
    			diffRFPSString+= "\t\t\t<Placemark>\n"+
                      //"\t\t\t\t<name>Placemark 2</name>\n"+
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                     "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>"+
+                     "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
@@ -220,7 +219,7 @@ public class Comparison
             diffSignalProString+= "\t\t\t<Placemark>\n"+
                       //"\t\t\t\t<name>Placemark 2</name>\n"+
                       //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                      "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>"+
+                      "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>\n"+
                       "\t\t\t\t<Point>\n"+
                          "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
                       "\t\t\t\t</Point>\n"+
@@ -231,7 +230,7 @@ public class Comparison
             inconclusiveString+= "\t\t\t<Placemark>\n"+
                      //"\t\t\t\t<name>Placemark 2</name>\n"+
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
-                     "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>"+
+                     "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                          "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
@@ -261,13 +260,13 @@ public class Comparison
       
       //Formating points with similar singal coverage for kml
       String finalSameString = folderStartTag+
-                   "\t\t\t<Style id=\"stylesel_SAME\">"+
-                     "\t\t\t\t<LabelStyle>"+
-                        "\t\t\t\t\t<color>FF00FF00</color>"+ //green
-                        "\t\t\t\t\t<colorMode>normal</colorMode>"+
-                        "\t\t\t\t\t<scale>1</scale>"+
-                     "\t\t\t\t</LabelStyle>"+
-                   "\t\t\t</Style>"+
+                   "\t\t\t<Style id=\"stylesel_SAME\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF00FF00</color>\n"+ //green
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
                    "\t\t\t<name>Similar Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is the same.</description>\n"+
                    sameString+
@@ -275,13 +274,13 @@ public class Comparison
 
       //Formating points where only RFPS had singal coverage for kml
       String finalDiffRFPSString = folderStartTag+
-                   "\t\t\t<Style id=\"stylesel_ONLY_RFPS\">"+
-                     "\t\t\t\t<LabelStyle>"+
-                        "\t\t\t\t\t<color>FF3366FF</color>"+ //blue
-                        "\t\t\t\t\t<colorMode>normal</colorMode>"+
-                        "\t\t\t\t\t<scale>1</scale>"+
-                     "\t\t\t\t</LabelStyle>"+
-                   "\t\t\t</Style>"+
+                   "\t\t\t<Style id=\"stylesel_ONLY_RFPS\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF3366FF</color>\n"+ //blue
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
                    "\t\t\t<name>Similar Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is the same.</description>\n"+
                    "\t\t\t<name>Difference in Coverage</name>\n"+
@@ -291,13 +290,13 @@ public class Comparison
 
       //Formating points where only SignalPro had singal coverage for kml
       String finalDiffSignalProString = folderStartTag+
-                   "\t\t\t<Style id=\"stylesel_ONLY_SIGPRO\">"+
-                     "\t\t\t\t<LabelStyle>"+
-                        "\t\t\t\t\t<color>FF0000FF</color>"+ //red
-                        "\t\t\t\t\t<colorMode>normal</colorMode>"+
-                        "\t\t\t\t\t<scale>1</scale>"+
-                     "\t\t\t\t</LabelStyle>"+
-                   "\t\t\t</Style>"+
+                   "\t\t\t<Style id=\"stylesel_ONLY_SIGPRO\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF0000FF</color>\n"+ //red
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
                    "\t\t\t<name>Difference in Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage only in SignalPro.</description>\n"+
                    diffSignalProString+
@@ -305,13 +304,13 @@ public class Comparison
 
       //Formating points with inconclusive singal coverage for kml
       String finalInconclusiveString = folderStartTag+
-                   "\t\t\t<Style id=\"stylesel_INCON\">"+
-                     "\t\t\t\t<LabelStyle>"+
-                        "\t\t\t\t\t<color>FFFFFF00</color>"+ //yellow
-                        "\t\t\t\t\t<colorMode>normal</colorMode>"+
-                        "\t\t\t\t\t<scale>1</scale>"+
-                     "\t\t\t\t</LabelStyle>"+
-                   "\t\t\t</Style>"+
+                   "\t\t\t<Style id=\"stylesel_INCON\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FFFFFF00</color>\n"+ //yellow
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
                    "\t\t\t<name>Inconclusive Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is inconclusive.</description>\n"+
                    inconclusiveString+
