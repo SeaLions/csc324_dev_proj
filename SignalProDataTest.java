@@ -24,13 +24,12 @@ import java.io.*;
 public class SignalProDataTest {
 	int expected;
 	int actual;
-   File signalProFile;
-   SignalProData signalProData;
-   InputStream testCoordinates;
+	SignalProData signalProData;
+	File signalProFile;
+
    /** Fixture initialization (common initialization
     *  for all tests). **/
-   @Before public void setUp() throws IOException
-   {
+   @Before public void setUp() {
 		expected = 1;
 		actual = 1;
       signalProData = new SignalProData();
@@ -43,6 +42,7 @@ public class SignalProDataTest {
       {
       System.out.println("file could not be found ");
       }
+
    }
 
 
@@ -61,4 +61,5 @@ public class SignalProDataTest {
       boolean test = signalProData.isCoverageNear(lon,lat,distanceInMeters);      
  		Assert.assertEquals(true,test);  
 	}
+
 }
