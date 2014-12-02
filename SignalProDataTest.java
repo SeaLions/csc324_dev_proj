@@ -38,7 +38,7 @@ public class SignalProDataTest {
       //create signal pro file
       try
       {
-         signalProFile = new File("SignalProtestCaseFlorida.kml");
+         signalProFile = new File("TestCaseFlorida.kmz");
       }catch(Exception E)
       {
       System.out.println("file could not be found ");
@@ -51,10 +51,14 @@ public class SignalProDataTest {
       Assert.assertEquals("Default test template that always passes.", expected, actual);
    }
    
-   /** Test only the KML File **/
-   @Test public void TestAKmlFileFromKmz()
+   /** Test the isCoverageNear method **/
+   @Test public void TestIsCoverageNearMethod()
    {
+		double lon = 1;
+		double lat = 0;
+		double distanceInMeters = 10;
       signalProData.readData(signalProFile);
-      signalProData.getKMLInformation(testCoordinates);      
-   }
+      boolean test = signalProData.isCoverageNear(lon,lat,distanceInMeters);      
+ 		Assert.assertEquals(true,test);  
+	}
 }
