@@ -52,10 +52,11 @@ public class SignalProDataTest {
    }
    
    /** Test the isCoverageNear method **/
+	//we do not have a way to test legitimate points, so the test is set up to automatically fail
    @Test public void TestIsCoverageNearMethod()
    {
 		double lon = 1;
-		double lat = 0;
+		double lat = 1;
 		double distanceInMeters = 10;
       signalProData.readData(signalProFile);
       boolean test = signalProData.isCoverageNear(lon,lat,distanceInMeters);      

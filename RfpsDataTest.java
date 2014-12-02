@@ -106,7 +106,7 @@ public class RfpsDataTest
 	//Testing first coordinate in a kml file equals first coordinate of first bearing
 	@Test public void TestFirstCoordinateOfKML()
 	{
-		String FirstCoordinate= "-118.377330,39.068387,0.000 -118.678860,39.052595,0.000 -118.974841,39.005509,0.000 -119.259852,38.927996,0.000 -119.528713,38.821477,0.000 -119.776600,38.687897,0.000 -119.999142,38.529683,0.000 -120.192505,38.349691,0.000 -120.353455,38.151147,0.000 -120.479409,37.937579,0.000 -120.568461,37.712751,0.000 -120.619398,37.480590,0.000 -120.631696,37.245113,0.000 -120.605503,37.010358,0.000 -120.541616,36.780311,0.000 -120.441438,36.558847,0.000 -120.306940,36.349664,0.000 -120.140611,36.156228,0.000 -119.945403,35.981720,0.000 -119.724677,35.828992,0.000 -119.482149,35.700526,0.000 -119.221824,35.598399,0.000 -118.947947,35.524258,0.000 -118.664937,35.479292,0.000 -118.377330,35.464223,0.000 -118.089723,35.479292,0.000 -117.806713,35.524258,0.000 -117.532836,35.598399,0.000 -117.272511,35.700526,0.000 -117.029983,35.828992,0.000 -116.809257,35.981720,0.000 -116.614049,36.156228,0.000 -116.447720,36.349664,0.000 -116.313222,36.558847,0.000 -116.213044,36.780311,0.000 -116.149157,37.010358,0.000 -116.122964,37.245113,0.000 -116.135262,37.480590,0.000 -116.186199,37.712751,0.000 -116.275251,37.937579,0.000 -116.401205,38.151147,0.000 -116.562155,38.349691,0.000 -116.755518,38.529683,0.000 -116.978060,38.687897,0.000 -117.225947,38.821477,0.000 -117.494808,38.927996,0.000 -117.779819,39.005509,0.000 -118.075800,39.052595,0.000 -118.377330,39.068387,0.000 ";
+		String FirstCoordinate= "-118.377330,37.266580,2.0 -118.377330,37.489291,2.0 ";
 		
 		rfpsData.readData(fullSizeTestKml);
 		Assert.assertEquals(FirstCoordinate,rfpsData.getData().get(0).get(0));
@@ -114,12 +114,37 @@ public class RfpsDataTest
    //testing coverage near point method for 1 point
    @Test public void TestCoverageNearPointMethod()
 	{
-      rfpsData.readData(fullSizeTestKml);
-      //this point Lat,Lon was taken from printing out one of the points of PTSarr from fullSizeTestKml
- 		boolean testAPoint = rfpsData.coverageNearPoint(-118.37733, 37.28093499263958, 10.0);
+      rfpsData.readData(twoBearingTestKml);
+      //this point Lat,Lon was taken from printing out one of the points of PTSarr from twoBearingTestKml
+ 		boolean testAPoint = rfpsData.coverageNearPoint(-118.37733, 37.266580, 10.0);
       Assert.assertEquals(true,testAPoint);
 	}
-
+	
+	//write a test that is a point in between two coverage lines along the same bearing
+	@Test public void TestCoverNearPointMethodToFalse()
+	{
+		rfpsData.readData(twoBearingTestKml);
+		//find a point that should NOT have coverage in twoBearingTestKML
+		//the point selected is in between two of the coverage lines that are on the same bearing, 
+		//longitude is the same but latitude is different by greater than 10 meters 
+		boolean testPointFail = rfpsData.coverageNearPoint(-118.37733,37.52111,10);
+		Assert.assertEquals(false,testPointFail);
+	}
+	//test two bearings on same kml file
+	@Test public void TestCoverageNearPointMethod4TwoBearings()
+	{
+		rfpsData.readData(twoBearingTestKml);
+		boolean testPoint1 = rfpsData.coverageNearPoint(-118.37733, 37.266580, 10.0);
+		boolean testPoint2 = rfpsData.coverageNearPoint(-81.775640, 27.343390, 10.0);
+		
+		Assert.assertEquals(true,testPoint1);
+		Assert.assertEquals(true,testPoint2);
+	}
+	//test greater range of distance 
+	@Test public void TestCoverageAtdistanceOf100Meters()
+	{
+		rfpsData.readData(twoBearingTestKml);
+	}
 }
 
 	
