@@ -127,7 +127,7 @@ public class RfpsDataTest
 		//find a point that should NOT have coverage in twoBearingTestKML
 		//the point selected is in between two of the coverage lines that are on the same bearing, 
 		//longitude is the same but latitude is different by greater than 10 meters 
-		boolean testPointFail = rfpsData.coverageNearPoint(-118.37733,37.52111,10);
+		boolean testPointFail = rfpsData.coverageNearPoint(-118.37733,37.52111,10.0);
 		Assert.assertEquals(false,testPointFail);
 	}
 	//test two bearings on same kml file
@@ -144,6 +144,14 @@ public class RfpsDataTest
 	@Test public void TestCoverageAtdistanceOf100Meters()
 	{
 		rfpsData.readData(twoBearingTestKml);
+		boolean testPoint1 = rfpsData.coverageNearPoint(-118.37733, 37.49, 100.0);
+		Assert.assertEquals(true,testPoint1);
+	}
+	@Test public void TestCoverageAtDistanceThatFails()
+	{
+		rfpsData.readData(twoBearingTestKml);
+		boolean testPoint1 = rfpsData.coverageNearPoint(-118.37733, 37.49, 10.0);
+		Assert.assertEquals(false,testPoint1);
 	}
 }
 
