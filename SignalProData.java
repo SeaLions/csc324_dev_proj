@@ -12,7 +12,7 @@ public class SignalProData extends PlotData
 {
 	
 	ArrayList<ArrayList<Boolean>> coverage;//first dimension is latitude, second is longitude
-	double northCoord, southCoord, eastCoord, westCoord;
+	float northCoord, southCoord, eastCoord, westCoord;
 	
 	
    public SignalProData()
@@ -28,16 +28,16 @@ public class SignalProData extends PlotData
          NodeList nl;
          
          nl = kmlTree.getElementsByTagName("north");
-         northCoord = Double.parseDouble(nl.item(0).getTextContent());
+         northCoord = Float.parseFloat(nl.item(0).getTextContent());
          
          nl = kmlTree.getElementsByTagName("south");
-         southCoord = Double.parseDouble(nl.item(0).getTextContent());
+         southCoord = Float.parseFloat(nl.item(0).getTextContent());
          
          nl = kmlTree.getElementsByTagName("east");
-         eastCoord = Double.parseDouble(nl.item(0).getTextContent());
+         eastCoord = Float.parseFloat(nl.item(0).getTextContent());
          
          nl = kmlTree.getElementsByTagName("west");
-         westCoord = Double.parseDouble(nl.item(0).getTextContent());
+         westCoord = Float.parseFloat(nl.item(0).getTextContent());
          
    		nl = kmlTree.getElementsByTagName("href");
 			String imageFileName = "";
@@ -126,17 +126,17 @@ public class SignalProData extends PlotData
       }
 	}
 	
-	public boolean isCoverageNear(double longitude, double latitude, double radiusInMeters) {
-		double pixelUnitLat = (northCoord - southCoord)/coverage.get(0).size();
-		double meterUnitLat = Math.PI*pixelUnitLat*6371000/360;
+	public boolean isCoverageNear(Coordinate loc, int radiusInMeters) {		
+		float pixelUnitLat = (northCoord - southCoord)/coverage.get(0).size();
+		float meterUnitLat = (float)(Math.PI*pixelUnitLat*6371000/360);
 		int pixelRadiusLat = (int)Math.floor(radiusInMeters/meterUnitLat) + 1;
 		
-		double pixelUnitLon = (eastCoord - westCoord)/coverage.get(0).size();
-		double meterUnitLon = Math.PI*pixelUnitLon*6371000/360;
+		float pixelUnitLon = (eastCoord - westCoord)/coverage.get(0).size();
+		float meterUnitLon = (float)(Math.PI*pixelUnitLon*6371000/360);
 		int pixelRadiusLon = (int)Math.floor(radiusInMeters/meterUnitLon) + 1;
 		
-		int centerPixelLon = nearestPixelToLongitude(longitude);
-		int centerPixelLat = nearestPixelToLatitude(latitude);
+		int centerPixelLon = nearestPixelToLongitude(loc.getLongitude());
+		int centerPixelLat = nearestPixelToLatitude(loc.getLatitude());
 		
       /*
       left/right/lower/upper are named for spatial orientation.
@@ -159,25 +159,15 @@ public class SignalProData extends PlotData
 			if (i < 0 || i >= coverage.size()) continue;
 			for (int j = leftPixelBound; j <= rightPixelBound; ++j) {
             if (j < 0 || j >= coverage.get(0).size()) continue;
-            double curLon = westCoord + j/(double)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
-            double curLat = southCoord + i/(double)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
-				if (distance(longitude, latitude, curLon, curLat) <= radiusInMeters && coverage.get(i).get(j))
+            float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
+            float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
+				if (CoordinateManager.distance(loc, new Coordinate(curLon, curLat)) <= radiusInMeters && coverage.get(i).get(j))
 					return true;
 			}
 		}
       
 		return false;
 	}
-   
-   private double distance(double lon1, double lat1, double lon2, double lat2) {
-      double dLat = Math.toRadians(lat2-lat1);  
-      double dLon = Math.toRadians(lon2-lon1);  
-      double a = Math.sin(dLat/2) * Math.sin(dLat/2) +  
-         Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *  
-         Math.sin(dLon/2) * Math.sin(dLon/2);  
-      double c = 2 * Math.asin(Math.sqrt(a));  
-      return 6371000 * c;  
-   }
 	
 	private int nearestPixelToLongitude(double longitude) {
 		double pixelUnit = (eastCoord - westCoord)/coverage.get(0).size();
