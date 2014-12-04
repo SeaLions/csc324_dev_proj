@@ -49,14 +49,7 @@ public class RfpsDataTest
       {
          System.out.println("one of the kml files was not found");
       }   
-   }/*
-	//not yet implemented
-	@Test public void wrongFileTypeTest()
-	{
-		//create an instance where user selects the wrong type of file, and see how readData deals with this
-		//Assert(rfpsData.readData(wrongFileType);
-		
-	}*/
+   }
 	//Test that checks single bearing coordinates that has three  
 	@Test public void TestABearingsCoordinates()
 	{
@@ -67,6 +60,9 @@ public class RfpsDataTest
 		bearingTestVector.add("-118.377330,37.266580,2.0 -118.377330,37.489291,2.0 ");
 		bearingTestVector.add("-118.377330,37.492557,2.0 -118.377330,37.507514,2.0 ");
 		bearingTestVector.add("-118.377330,37.541481,2.0 -118.377330,37.543494,2.0 ");
+		
+		//assert method
+		Assert.assertEquals(bearingTestVector,rfpsData.getData().get(0));
 		
 	}
 	//Test that tests two bearing coordinates should be a vector of size two with vector of strings each vector of strings has three strings representing coordinates in it. 
