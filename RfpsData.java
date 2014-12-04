@@ -13,6 +13,7 @@ public class RfpsData extends PlotData
    Vector<String> rfpsStringCoordinatesVector; 
    Vector<double[]> PTSarr = new Vector<double[]>();
    Vector<Vector<double[]>> rfpsDoubleCoordinateVector=new Vector<Vector<double[]>>();
+   double[][][]finalArray=new double[360][1000][2];
    public RfpsData()
    {
       super();
@@ -101,10 +102,64 @@ public class RfpsData extends PlotData
        e.printStackTrace();  
       }
       
+      parseData();
    }
-   
-    
+   //--------------------------------------------------------------------------------------------------change zone enter
+   private void parseData()
+   {
       
+      for(int largeLoop=0;largeLoop<360;largeLoop++)
+      {
+         //a master iterator for this largeLoop iteration
+         int master=0;
+         for(int j=0;j<rfpsStringBearingVector.get(largeLoop).size();j++)
+         {
+            //initialize variables needed for primary loop's current iteration
+            Vector<double[]> PTSarr = new Vector<double[]>();
+            double[][] endPTS = new double [2][2];
+            //convert String data to Double values
+            endPTS=parseString(rfpsStringBearingVector.get(largeLoop).get(j));
+            //calculate the changes in latitude and longetude
+            double Dlat= endPTS[0][1]-endPTS[0][0];
+            double Dlon= endPTS[1][1]-endPTS[1][0];
+            //calculate the lengths of the three sides
+            double distH=distance(endPTS[0][0],endPTS[1][0],endPTS[0][1],endPTS[1][1]);
+            double distA=distance(endPTS[0][0],endPTS[1][0],endPTS[0][0],endPTS[1][1]);
+            double distO=distance(endPTS[0][0],endPTS[1][1],endPTS[0][1],endPTS[1][1]);
+            //calculate the number of partitions
+            int partitions=(int)(distH/100);
+            //calculate the angle for the point used as an origin
+            double angle = Fangle(distO,distA);
+            //initialize first point
+            double[] firstPoint = new double[2];
+            firstPoint[0]=endPTS[0][0];
+            firstPoint[1]=endPTS[1][0];
+            PTSarr.add(firstPoint);
+            
+            //iterator
+            int it;
+            //per iteration lat and lon change
+            double dLatPit=(100/distH)*Dlat;
+            double dLonPit=(100/distH)*Dlon;
+            //current segment's loop
+            for(int i=partitions;i>0;i--)
+            {
+               //set iterator value
+               it=partitions-i;
+               master++;
+               //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon)
+               PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit));
+            }
+            for(int i=0;i<partitions;i++)
+            {
+               finalArray[largeLoop][master][0]=PTSarr.get(i)[0];
+               finalArray[largeLoop][master][1]=PTSarr.get(i)[1];
+            }
+         }
+      }
+      
+   }
+   //--------------------------------------------------------------------------------------------------change zone exit
       
 
     //calculate new x
@@ -143,7 +198,7 @@ public class RfpsData extends PlotData
    }
    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FOR BRENDAN~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
    //what does this do?? there are a lot of parameters for this method but only 4 of them are used... getPoint is used in the coverageNearPoint method
-   private double[] getPoint(double lat, double lon,double Dlat, double Dlon,double angle, double distance,int iteration)
+   private double[] getPoint(double lat, double lon,double Dlat, double Dlon)
    {
       double[] arr= new double[2];
       arr[0]=lat+Dlat;
@@ -160,7 +215,7 @@ public class RfpsData extends PlotData
       dist = Math.acos(dist);
 	   dist = rad2deg(dist);
       dist = dist * 60 * 1.1515;
-//calculates distance in meters
+   //calculates distance in meters
          dist = dist * 1609.344;
 
       return (dist);
@@ -176,75 +231,23 @@ public class RfpsData extends PlotData
       return (rad * 180 / Math.PI);
    }
    
-   //needs to be more efficient, right now it takes 47 seconds to test 1 point
    //method to compare coverageNearPoint
-   public boolean coverageNearPoint(double Lat,double Lon,double distanceMeters)
+   public boolean coverageNearPoint(double Lat, double Lon, double distanceMeters)
    {
-      //defines variables to test against parameters passed into function
-      double rfpsLat,rfpsLon;
-      boolean isNear=false;
-      double actualDistance;
-      //parse strings into two points of latitude and longitude
-      for(int largeLoop=0;largeLoop<rfpsStringBearingVector.size();largeLoop++)
+      for(int i=0;i<360;i++)
       {
-         //a master iterator for this largeLoop iteration
-         int master=0;
-         for(int j=0;j<rfpsStringBearingVector.get(largeLoop).size();j++)
+         for(int j=0;j<1000;j++)
          {
-            //initialize variables needed for primary loop's current iteration
-            PTSarr = new Vector<double[]>();
-            double[][] endPTS = new double [2][2];
-            //convert String data to Double values
-            endPTS=parseString(rfpsStringBearingVector.get(largeLoop).get(j));
-            //calculate the changes in latitude and longetude
-            double Dlat= endPTS[0][1]-endPTS[0][0];
-            double Dlon= endPTS[1][1]-endPTS[1][0];
-            //calculate the lengths of the three sides
-            double distH=distance(endPTS[0][0],endPTS[1][0],endPTS[0][1],endPTS[1][1])*1000;
-            double distA=distance(endPTS[0][0],endPTS[1][0],endPTS[0][0],endPTS[1][1])*1000;
-            double distO=distance(endPTS[0][0],endPTS[1][1],endPTS[0][1],endPTS[1][1])*1000;
-            //calculate the number of partitions
-            int partitions=(int)(distH/100);
-            //calculate the angle for the point used as an origin
-            double angle = Fangle(distO,distA);
-            //initialize first point
-            double[] firstPoint = new double[2];
-            firstPoint[0]=endPTS[0][0];
-            firstPoint[1]=endPTS[1][0];
-            PTSarr.add(firstPoint);
-            
-            //iterator
-            int it;
-            //per iteration lat and lon change
-            double dLatPit=(100/distH)*Dlat;
-            double dLonPit=(100/distH)*Dlon;
-            //current segment's loop
-            for(int i=partitions;i>0;i--)
+            if(finalArray[i][j][0]!=0)
+               System.out.println(finalArray[i][j][0]+" "+finalArray[i][j][1]+" "+Lat+" "+Lon);
+            if(distance(finalArray[i][j][0],finalArray[i][j][1],Lat,Lon)<=distanceMeters && (finalArray[i][j][0]!=0 || finalArray[i][j][1]!=0))
             {
-               //set iterator value
-               it=partitions-i;
-               master++;
-               //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon,double angle, double distanceChangeFromOrigin)
-               PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit, angle, distH, it));
+               return true;
             }
-            
-            //go through each partition point in PTSarr and see how far it is from given point Lon,Lat
-            for(int i=0;i<PTSarr.size();i++)
-            {
-               rfpsLat = PTSarr.get(i)[0];
-               rfpsLon = PTSarr.get(i)[1];
-               actualDistance = distance(Lat,Lon,rfpsLat,rfpsLon); 
-               
-               if(actualDistance <= distanceMeters)
-               {
-                  isNear = true;      
-               }
-            }      
          }
       }
-      return isNear;
-   }
-   
+      return false; 
+   } 
    
 }//End class
 
