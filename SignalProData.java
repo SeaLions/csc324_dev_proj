@@ -126,7 +126,8 @@ public class SignalProData extends PlotData
       }
 	}
 	
-	public boolean isCoverageNear(Coordinate loc, int radiusInMeters) {		
+	public boolean isCoverageNear(double latitude, double longitude, int radiusInMeters) {
+		
 		float pixelUnitLat = (northCoord - southCoord)/coverage.get(0).size();
 		float meterUnitLat = (float)(Math.PI*pixelUnitLat*6371000/360);
 		int pixelRadiusLat = (int)Math.floor(radiusInMeters/meterUnitLat) + 1;
@@ -135,8 +136,8 @@ public class SignalProData extends PlotData
 		float meterUnitLon = (float)(Math.PI*pixelUnitLon*6371000/360);
 		int pixelRadiusLon = (int)Math.floor(radiusInMeters/meterUnitLon) + 1;
 		
-		int centerPixelLon = nearestPixelToLongitude(loc.getLongitude());
-		int centerPixelLat = nearestPixelToLatitude(loc.getLatitude());
+		int centerPixelLon = nearestPixelToLongitude(longitude);
+		int centerPixelLat = nearestPixelToLatitude(latitude);
 		
       /*
       left/right/lower/upper are named for spatial orientation.
@@ -161,7 +162,7 @@ public class SignalProData extends PlotData
             if (j < 0 || j >= coverage.get(0).size()) continue;
             float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
             float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
-				if (CoordinateManager.distance(loc, new Coordinate(curLon, curLat)) <= radiusInMeters && coverage.get(i).get(j))
+				if (CoordinateManager.distance(new Coordinate((float)latitude, (float)longitude), new Coordinate(curLat,curLon)) <= radiusInMeters && coverage.get(i).get(j))
 					return true;
 			}
 		}
