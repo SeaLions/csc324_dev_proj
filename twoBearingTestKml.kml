@@ -42,10 +42,10 @@
                 </LineString>
               </Placemark>
 				</Folder>
-        <Folder>
+            <Folder>
               <name>Bearing - 1.0 T</name>
               <Placemark>
-                <name>118.377330W - 37.266580N to 118.377330W - 37.489291N</name>
+                <name>81.775640W - 27.343390N to 81.769918W - 27.635348N</name>
                 <Style>
                   <LineStyle>
                     <color>3fffff01</color>
@@ -57,8 +57,8 @@
                   <coordinates>-81.775640,27.343390,2.0 -81.769918,27.635348,2.0 </coordinates>
                 </LineString>
               </Placemark>
-          <Placemark>
-                <name>118.377330W - 37.492557N to 118.377330W - 37.507514N</name>
+              <Placemark>
+                <name>81.769892W - 27.636685N to 81.769507W - 27.656251N</name>
                 <Style>
                   <LineStyle>
                     <color>3fffff01</color>
@@ -71,7 +71,7 @@
                 </LineString>
               </Placemark>
               <Placemark>
-                <name>118.377330W - 37.541481N to 118.377330W - 37.543494N</name>
+                <name>81.769484W - 27.657442N to 81.769398W - 27.661800N</name>
                 <Style>
                   <LineStyle>
                     <color>3fffff01</color>
@@ -83,5 +83,5 @@
                   <coordinates>-81.769484,27.657442,2.0 -81.769398,27.661800,2.0 </coordinates>
                 </LineString>
               </Placemark>
-        </Folder>
+            </Folder>
 </Folder>

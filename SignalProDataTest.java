@@ -24,13 +24,12 @@ import java.io.*;
 public class SignalProDataTest {
 	int expected;
 	int actual;
-   File signalProFile;
-   SignalProData signalProData;
-   InputStream testCoordinates;
+	SignalProData signalProData;
+	File signalProFile;
+
    /** Fixture initialization (common initialization
     *  for all tests). **/
-   @Before public void setUp() throws IOException
-   {
+   @Before public void setUp() {
 		expected = 1;
 		actual = 1;
       signalProData = new SignalProData();
@@ -38,11 +37,12 @@ public class SignalProDataTest {
       //create signal pro file
       try
       {
-         signalProFile = new File("SignalProtestCaseFlorida.kml");
+         signalProFile = new File("TestCaseFlorida.kmz");
       }catch(Exception E)
       {
       System.out.println("file could not be found ");
       }
+
    }
 
 
@@ -51,10 +51,16 @@ public class SignalProDataTest {
       Assert.assertEquals("Default test template that always passes.", expected, actual);
    }
    
-   /** Test only the KML File **/
-   @Test public void TestAKmlFileFromKmz()
+   /** Test the isCoverageNear method **/
+	//we do not have a way to test legitimate points, so the test is set up to automatically fail
+   @Test public void TestIsCoverageNearMethod()
    {
+		double lon = 1;
+		double lat = 1;
+		double distanceInMeters = 10;
       signalProData.readData(signalProFile);
-      signalProData.getKMLInformation(testCoordinates);      
-   }
+      boolean test = signalProData.isCoverageNear(lon,lat,distanceInMeters);      
+ 		Assert.assertEquals(true,test);  
+	}
+
 }

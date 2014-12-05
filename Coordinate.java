@@ -1,4 +1,4 @@
-        
+
 /*
  * This file is part of the AusStage Utilities Package
  *
@@ -30,6 +30,7 @@ public class Coordinate implements Comparable<Coordinate>{
   // declare private class level variables
   private float latitude;
   private float longitude;
+  private int coverage;
   private DecimalFormat format;
   
   /**
@@ -43,6 +44,7 @@ public class Coordinate implements Comparable<Coordinate>{
     if(CoordinateManager.isValidLatitude(latitude) == true && CoordinateManager.isValidLongitude(longitude) == true) {
       this.latitude = latitude;
       this.longitude = longitude;
+      this.coverage = -1;
     } else {
       throw new IllegalArgumentException("The parameters did not pass validation as defined by the CoordinateManager class");
     }
@@ -53,6 +55,14 @@ public class Coordinate implements Comparable<Coordinate>{
   /*
    * get and set methods
    */
+  public int getCoverage(){
+    return coverage;
+  }
+  
+  public void setCoverage(int coverage){
+    this.coverage = coverage;
+  }
+  
   public float getLatitude() {
     return latitude;
   }

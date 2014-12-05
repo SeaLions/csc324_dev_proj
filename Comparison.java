@@ -9,6 +9,19 @@ import java.text.SimpleDateFormat;
   
 public class Comparison
 {
+   //compare constants
+   private final int SAME = 1;
+   private final int ONLY_RFPS = 2;
+   private final int ONLY_SIGPRO = 3;
+   private final int INCONCLUSIVE = 4;
+   
+   //KML strings
+   private String sameString;
+   private String diffRFPSString;
+   private String diffSignalProString;
+   private String inconclusiveString;
+   
+   
    private UserInput userInput;
    private RfpsData rfpsData;
    private SignalProData signalProData;
@@ -20,11 +33,16 @@ public class Comparison
    {
       this.userInput = ui;
       
-      
       this.rfpsData = new RfpsData();
       rfpsData.readData(ui.getRfpsFile());
       this.signalProData = new SignalProData();
       signalProData.readData(ui.getSignalProFile());
+      
+      //initialize the kml strings
+      sameString = "";
+      diffRFPSString = "";
+      diffSignalProString = "";
+      inconclusiveString = "";
       
       compare();
    }
@@ -170,17 +188,146 @@ public class Comparison
    }
    
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone closed
+
+
+   public void addKMLPoint(Coordinate newCoord){
+      switch (newCoord.getCoverage()) {
+         case SAME:
+            //coverage matches in signal pro and RFPS
+            sameString+= "\t\t\t<Placemark>\n"+
+                     //"\t\t\t\t<name>Placemark 2</name>\n"+
+                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>\n"+
+                     "\t\t\t\t<Point>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                     "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";
+            break;
+         case ONLY_RFPS:
+            //the coverage only in RFPS
+   			diffRFPSString+= "\t\t\t<Placemark>\n"+
+                     //"\t\t\t\t<name>Placemark 2</name>\n"+
+                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>\n"+
+                     "\t\t\t\t<Point>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                     "\t\t\t\t</Point>\n"+
+                  "\t\t\t</Placemark>\n";				
+            break;
+         case ONLY_SIGPRO:
+            //the coverage only in signal pro
+            diffSignalProString+= "\t\t\t<Placemark>\n"+
+                      //"\t\t\t\t<name>Placemark 2</name>\n"+
+                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>\n"+
+                      "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                      "\t\t\t\t</Point>\n"+
+                   "\t\t\t</Placemark>\n";
+            break;
+         case INCONCLUSIVE:
+            //the coverage inconclusive
+            inconclusiveString+= "\t\t\t<Placemark>\n"+
+                     //"\t\t\t\t<name>Placemark 2</name>\n"+
+                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>\n"+
+                     "\t\t\t\t<Point>\n"+
+                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                     "\t\t\t\t</Point>\n"+
+                   "\t\t\t</Placemark>\n";
+            break;
+         default:
+            //do nothing
+            break;
+       }//end switch
+   }//end addKMLPoint()
    
+  
    public boolean createKmlOutputFile()
    {
+      
       //string that will hold the initial .kml file
       String kmlString = "";
       
-      // Template for generating base .kml example file:
-      kmlString+= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //begin tag
-      kmlString+= "<kml xmlns=\"http://earth.google.com/kml/2.0\">"; //begin kml tag
-      kmlString+= "<Document><name>KML Example file</name><description>Simple markers</description><Placemark><name>Marker 1</name><description>Test pin! WOOHOO!</description><Point><coordinates>-117.250092,32.717501,0 </coordinates></Point></Placemark></Document>"; 
-      kmlString+= "</kml>";//end kml tag
+      String kmlBeginTag = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"; //begin tag
+		String kmlTypeTag = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; //begin kml tag
+		String kmlEndTag = "</kml>"; //end kml tag
+      
+      String docStartTag = "\t<Document>\n";
+      String docEndTag = "\t</Document>\n";
+      String folderStartTag = "\t\t<Folder>\n";
+      String folderEndTag = "\t\t</Folder>\n";
+      
+      //Formating points with similar singal coverage for kml
+      String finalSameString = folderStartTag+
+                   "\t\t\t<Style id=\"stylesel_SAME\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF00FF00</color>\n"+ //green
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
+                   "\t\t\t<name>Similar Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage is the same.</description>\n"+
+                   sameString+
+                   folderEndTag;
+
+      //Formating points where only RFPS had singal coverage for kml
+      String finalDiffRFPSString = folderStartTag+
+                   "\t\t\t<Style id=\"stylesel_ONLY_RFPS\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF3366FF</color>\n"+ //blue
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
+                   "\t\t\t<name>Similar Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage is the same.</description>\n"+
+                   "\t\t\t<name>Difference in Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage only in RFPS.</description>\n"+
+                   diffRFPSString+
+                   folderEndTag;
+
+      //Formating points where only SignalPro had singal coverage for kml
+      String finalDiffSignalProString = folderStartTag+
+                   "\t\t\t<Style id=\"stylesel_ONLY_SIGPRO\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FF0000FF</color>\n"+ //red
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
+                   "\t\t\t<name>Difference in Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage only in SignalPro.</description>\n"+
+                   diffSignalProString+
+                   folderEndTag;
+
+      //Formating points with inconclusive singal coverage for kml
+      String finalInconclusiveString = folderStartTag+
+                   "\t\t\t<Style id=\"stylesel_INCON\">\n"+
+                     "\t\t\t\t<LabelStyle>\n"+
+                        "\t\t\t\t\t<color>FFFFFF00</color>\n"+ //yellow
+                        "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
+                        "\t\t\t\t\t<scale>1</scale>\n"+
+                     "\t\t\t\t</LabelStyle>\n"+
+                   "\t\t\t</Style>\n"+
+                   "\t\t\t<name>Inconclusive Coverage</name>\n"+
+                   "\t\t\t<description>Signal Coverage is inconclusive.</description>\n"+
+                   inconclusiveString+
+                   folderEndTag;
+						  						  
+      
+      // Generating complete output .kml file
+      kmlString+= kmlBeginTag;
+      kmlString+= kmlTypeTag;
+      kmlString+= docStartTag+"\t\t<name>KML Output</name>\n";
+      kmlString+=  finalSameString;
+      kmlString+=  finalDiffRFPSString;
+      kmlString+=  finalDiffSignalProString;
+      kmlString+=  finalInconclusiveString;
+      kmlString+= docEndTag;
+      kmlString+= kmlEndTag;
+
 		
 		//date for file name---
       java.util.Date date= new java.util.Date();
