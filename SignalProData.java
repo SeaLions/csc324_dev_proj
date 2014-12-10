@@ -190,4 +190,12 @@ public class SignalProData extends PlotData
 		}
 		return -1;
 	}
+   
+   public float getNorthBound() { return northCoord; }
+   
+   public float getSouthBound() { return southCoord; }
+   
+   public float getEastBound() { return eastCoord; }
+   
+   public float getWestBound() { return westCoord; }
 }

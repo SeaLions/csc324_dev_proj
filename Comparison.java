@@ -46,7 +46,10 @@ public class Comparison
    private void compare()
    {
 		int gridSpacingDistance = 100;//in meters
-		float westBound, eastBound, northBound, southBound;
+		float westBound = signalProData.getWestBound(),
+            eastBound = signalProData.getEastBound(),
+            northBound = signalProData.getNorthBound(),
+            southBound = signalProData.getSouthBound();
 		comparisonGrid = new ArrayList< ArrayList< CoveragePoint> >();
 		Coordinate gridPoint = new Coordinate(westBound, southBound);
 		int row = 0;
