@@ -161,7 +161,7 @@ public class SignalProData extends PlotData
             if (j < 0 || j >= coverage.get(0).size()) continue;
             float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
             float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
-				if (CoordinateManager.distance(loc, new Coordinate(curLon, curLat)) <= radiusInMeters && coverage.get(i).get(j))
+				if (CoordinateManager.distance(loc, new Coordinate(curLat,curLon)) <= radiusInMeters && coverage.get(i).get(j))
 					return true;
 			}
 		}

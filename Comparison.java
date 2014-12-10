@@ -9,20 +9,36 @@ import java.text.SimpleDateFormat;
   
 public class Comparison
 {
+   
+   //compare constants
+   private final int SAME = 3;
+   private final int ONLY_RFPS = 1;
+   private final int ONLY_SIGPRO = 2;
+   private final int INCONCLUSIVE = 4;
+      
+   //KML strings
+   private String sameString;
+   private String diffRFPSString;
+   private String diffSignalProString;
+   private String inconclusiveString;
+   
    private UserInput userInput;
    private RfpsData rfpsData;
    private SignalProData signalProData;
-	private ArrayList<ArrayList<CoveragePoint> > comparisonGrid;
+   private ArrayList<CoveragePoint> coverageGrid;
    
    public Comparison(UserInput ui)
    {
       this.userInput = ui;
       
+      sameString = diffRFPSString = diffSignalProString = inconclusiveString = "";
       
       this.rfpsData = new RfpsData();
       rfpsData.readData(ui.getRfpsFile());
       this.signalProData = new SignalProData();
       signalProData.readData(ui.getSignalProFile());
+      
+      this.coverageGrid = new ArrayList<CoveragePoint>();
       
       compare();
    }
@@ -31,15 +47,15 @@ public class Comparison
  
  	public class CoveragePoint
 	{
-		public CoveragePoint(Coordinate location, boolean coverageHere) {
+		public CoveragePoint(Coordinate location, int covType) {
 			loc = new Coordinate(location.getLatitude(), location.getLongitude());
-			coverageIsHere = coverageHere;
+			coverageType = covType;
 		}
 		
-		public boolean isCoverageHere() { return coverageIsHere; }
-		public Coordinate getLocation() { return new Coordinate(loc.getLatitude(), loc.getLongitude()); }
+		public int getCoverageType() { return coverageType; }
+		public Coordinate getCoordinate() { return new Coordinate(loc.getLatitude(), loc.getLongitude()); }
 		
-		private boolean coverageIsHere;
+		private int coverageType;
 		private Coordinate loc;
 	}  
 	
@@ -50,24 +66,28 @@ public class Comparison
             eastBound = signalProData.getEastBound(),
             northBound = signalProData.getNorthBound(),
             southBound = signalProData.getSouthBound();
-		comparisonGrid = new ArrayList< ArrayList< CoveragePoint> >();
-		Coordinate gridPoint = new Coordinate(westBound, southBound);
+		Coordinate gridPoint = new Coordinate(southBound,westBound);
 		int row = 0;
+//       int count = 0;
 		while (northBound - gridPoint.getLatitude() > 0) {
-			comparisonGrid.add(new ArrayList<CoveragePoint>());
 			gridPoint.setLongitude(westBound);
 			while (eastBound - gridPoint.getLongitude() > 0) {
-				comparisonGrid.get(row).add(new CoveragePoint(gridPoint, rfpsData.isCoverageNear(gridPoint, gridSpacingDistance/2) && signalProData.isCoverageNear(gridPoint, gridSpacingDistance/2)));
+            boolean rfpsCoversPoint = rfpsData.isCoverageNear(gridPoint, gridSpacingDistance/2);
+            boolean signalProCoversPoint = signalProData.isCoverageNear(gridPoint, gridSpacingDistance/2);
+            int coverageType = (signalProCoversPoint ? 2 : 0) & (rfpsCoversPoint ? 1 : 0);
+            coverageGrid.add(new CoveragePoint(gridPoint, coverageType));
 				gridPoint = CoordinateManager.addDistanceEast(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
+//             ++count;
 			}
+//          System.out.println(count);
 			gridPoint = CoordinateManager.addDistanceSouth(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
 			++row;
 		}
    }   
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone closed
    
-   public void addKMLPoint(Coordinate newCoord){
-      switch (newCoord.getCoverage()) {
+   public void addKMLPoint(CoveragePoint covPoint){
+      switch (covPoint.getCoverageType()) {
          case SAME:
             //coverage matches in signal pro and RFPS
             sameString+= "\t\t\t<Placemark>\n"+
@@ -75,7 +95,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+covPoint.getCoordinate().getLongitude()+","+covPoint.getCoordinate().getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                   "\t\t\t</Placemark>\n";
             break;
@@ -86,7 +106,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+covPoint.getCoordinate().getLongitude()+","+covPoint.getCoordinate().getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                   "\t\t\t</Placemark>\n";				
             break;
@@ -97,7 +117,7 @@ public class Comparison
                       //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                       "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>\n"+
                       "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+covPoint.getCoordinate().getLongitude()+","+covPoint.getCoordinate().getLatitude()+",0 </coordinates>\n"+
                       "\t\t\t\t</Point>\n"+
                    "\t\t\t</Placemark>\n";
             break;
@@ -108,7 +128,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+covPoint.getCoordinate().getLongitude()+","+covPoint.getCoordinate().getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                    "\t\t\t</Placemark>\n";
             break;

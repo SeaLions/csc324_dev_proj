@@ -244,7 +244,7 @@ public class RfpsData extends PlotData
       {
          for(int j=0;j<1000;j++)
          {
-            myCoord = new Coordinate((float)finalArray[i][j][0], (float)finalArray[i][j][1]);
+            myCoord = new Coordinate((float)finalArray[i][j][1], (float)finalArray[i][j][0]);
 //             if(myCoord.getLatitude()!=0)
 //                 System.out.println(myCoord.getLatitude()+" "+myCoord.getLongitude());
              if(CoordinateManager.distance(coord, myCoord)<=distanceMeters && (myCoord.getLatitude()!=0 || myCoord.getLongitude()!=0))
