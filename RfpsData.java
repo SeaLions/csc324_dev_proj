@@ -14,6 +14,7 @@ public class RfpsData extends PlotData
    Vector<double[]> PTSarr = new Vector<double[]>();
    Vector<Vector<double[]>> rfpsDoubleCoordinateVector=new Vector<Vector<double[]>>();
    double[][][]finalArray=new double[360][1000][2];
+   Coordinate center;
    public RfpsData()
    {
       super();
@@ -103,11 +104,23 @@ public class RfpsData extends PlotData
       }
     
     
-    parseData();
-      
+      parseData();
+      createCenter();
    }
    
-   //--------------------------------------------------------------------------------------------------change zone enter
+   //find center point
+   public void createCenter()
+   {
+      double sumLat=0;
+      double sumLon=0;
+      for(int i=0;i<360;i++)
+      {
+         sumLat+=finalArray[i][0][0];
+         sumLon+=finalArray[i][0][1];
+      }
+      center=new Coordinate((float)(sumLat/360.0),(float)(sumLon/360.0));
+   }
+   
     private void parseData()
     {
        
@@ -162,7 +175,7 @@ public class RfpsData extends PlotData
        }
        
     }
-    //--------------------------------------------------------------------------------------------------change zone exit
+    
    
       
 
@@ -172,16 +185,19 @@ public class RfpsData extends PlotData
       angle=90-angle;
       return distance*Math.sin(angle);
    }
+   
    //calculate new y
    private double metersYcalc(double angle, double distance)
    {
       return 100*Math.sin(angle);
    }
+   
    //find angle
    public double Fangle(double Opposite,double Adjacent)
    {
       return Math.asin(Opposite/Adjacent);
    }
+   
    //parse the current string into 4 doubles and returns the array
    private double[][] parseString(String current)
    {
@@ -200,8 +216,8 @@ public class RfpsData extends PlotData
       endPTS[1][1]=Tlon2;
       return endPTS;
    }
-   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FOR BRENDAN~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-   //what does this do?? there are a lot of parameters for this method but only 4 of them are used... getPoint is used in the coverageNearPoint method
+   
+   //gets the current point in the partition iteration
    private double[] getPoint(double lat, double lon,double Dlat, double Dlon)
    {
       double[] arr= new double[2];
@@ -209,7 +225,6 @@ public class RfpsData extends PlotData
       arr[1]=lon+Dlon;
       return arr;
    }
-   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
    //calculates distance between two gps coords
    private double distance(double lat1, double lon1, double lat2, double lon2)
@@ -235,16 +250,24 @@ public class RfpsData extends PlotData
       return (rad * 180 / Math.PI);
    }
    
-   //needs to be more efficient, right now it takes 47 seconds to test 1 point
    //method to compare coverageNearPoint
    public boolean isCoverageNear(Coordinate coord, int distanceMeters)
    {
       Coordinate myCoord;
-      for(int i=0;i<360;i++)
-      {
+      int radial=getRadial(coord);
+      
+//      for(int i=0;i<360;i++)
+//      {
          for(int j=0;j<1000;j++)
          {
-            myCoord = new Coordinate((float)finalArray[i][j][1], (float)finalArray[i][j][0]);
+            myCoord = new Coordinate((float)finalArray[radial][j][1], (float)finalArray[radial][j][0]);
+//             if(myCoord.getLatitude()!=0)
+//                 System.out.println(myCoord.getLatitude()+" "+myCoord.getLongitude());
+             if(CoordinateManager.distance(coord, myCoord)<=distanceMeters && (myCoord.getLatitude()!=0 || myCoord.getLongitude()!=0))
+             {
+                   return true;
+             }
+             myCoord = new Coordinate((float)finalArray[radial+1][j][1], (float)finalArray[radial+1][j][0]);
 //             if(myCoord.getLatitude()!=0)
 //                 System.out.println(myCoord.getLatitude()+" "+myCoord.getLongitude());
              if(CoordinateManager.distance(coord, myCoord)<=distanceMeters && (myCoord.getLatitude()!=0 || myCoord.getLongitude()!=0))
@@ -252,10 +275,34 @@ public class RfpsData extends PlotData
                    return true;
              }
          }
-      }
+//      }
       return false;
    }
-   
+   //method for finding the radial
+   public int getRadial(Coordinate coord)
+   {
+      float x = Math.abs(coord.getLongitude()-center.getLongitude());
+      float y = Math.abs(coord.getLatitude()-center.getLatitude());
+      double angle;
+      if(x >= 0 && y >= 0)
+      {
+         angle = Math.atan(x/y);
+      }
+      else if(x >= 0 && y < 0)
+      {
+         angle = 90+Math.atan(y/x);
+      }
+      else if(x < 0 && y >= 0)
+      {
+         angle = 270+Math.atan(y/x);
+      }
+      else
+      {
+         angle = 180+Math.atan(x/y);
+      }
+      System.out.println(angle);
+      return (int)angle;
+   }
    
 }//End class
 
