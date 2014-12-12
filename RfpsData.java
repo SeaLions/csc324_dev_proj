@@ -232,15 +232,15 @@ public class RfpsData extends PlotData
    }
    
    //method to compare coverageNearPoint
-   public boolean coverageNearPoint(double Lat, double Lon, double distanceMeters)
+   public boolean coverageNearPoint(Coordinate coord, double distanceMeters)
    {
       for(int i=0;i<360;i++)
       {
          for(int j=0;j<1000;j++)
          {
             if(finalArray[i][j][0]!=0)
-               System.out.println(finalArray[i][j][0]+" "+finalArray[i][j][1]+" "+Lat+" "+Lon);
-            if(distance(finalArray[i][j][0],finalArray[i][j][1],Lat,Lon)<=distanceMeters && (finalArray[i][j][0]!=0 || finalArray[i][j][1]!=0))
+               System.out.println(finalArray[i][j][0]+" "+finalArray[i][j][1]+" "+coord.getLatitude()+" "+coord.getLongitude());
+            if(distance(finalArray[i][j][0],finalArray[i][j][1],coord.getLatitude(),coord.getLongitude())<=distanceMeters && (finalArray[i][j][0]!=0 || finalArray[i][j][1]!=0))
             {
                return true;
             }
