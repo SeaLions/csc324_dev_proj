@@ -94,11 +94,11 @@ public class Comparison
                //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon,double angle, double distanceChangeFromOrigin)
                PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit, angle, distH, it));
             }
-            System.out.println("-------------------"+partitions+"--------------------");
+//             System.out.println("-------------------"+partitions+"--------------------");
             for(int i=0;i<partitions;i++)
             {
                //test-----
-               System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
+//                System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
                
                boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0],100);
                
@@ -109,6 +109,10 @@ public class Comparison
                   afterCompare[largeLoop][master][2]=1;
                else
                   afterCompare[largeLoop][master][2]=0;
+					
+					Coordinate temp = new Coordinate((float)afterCompare[largeLoop][master][1], (float)afterCompare[largeLoop][master][0]);
+					temp.setCoverage(correlation ? SAME : ONLY_RFPS);
+					addKMLPoint(temp);
             }
          }
       }
@@ -199,7 +203,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                   "\t\t\t</Placemark>\n";
             break;
@@ -210,7 +214,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                        "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                   "\t\t\t</Placemark>\n";				
             break;
@@ -221,7 +225,7 @@ public class Comparison
                       //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                       "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>\n"+
                       "\t\t\t\t<Point>\n"+
-                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
                       "\t\t\t\t</Point>\n"+
                    "\t\t\t</Placemark>\n";
             break;
@@ -232,7 +236,7 @@ public class Comparison
                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
-                         "\t\t\t\t\t<coordinates>"+newCoord.getLatitude()+","+newCoord.getLongitude()+",0 </coordinates>\n"+
+                        "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
                      "\t\t\t\t</Point>\n"+
                    "\t\t\t</Placemark>\n";
             break;
