@@ -57,7 +57,7 @@ public class SignalProDataTest {
    {
 		double lon = 1;
 		double lat = 1;
-		double distanceInMeters = 10;
+		int distanceInMeters = 10;
       signalProData.readData(signalProFile);
       boolean test = signalProData.isCoverageNear(lon,lat,distanceInMeters);      
  		Assert.assertEquals(true,test);  
