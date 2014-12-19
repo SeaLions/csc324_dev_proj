@@ -139,7 +139,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / new Float(1000);  
+    float kilometers = distance / (float)1000.0;  
     
     // calculate the new latitude
     double newLat = latitude + (kilometers / latitudeConstant());
@@ -191,7 +191,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / 1000;  
+    float kilometers = distance / (float)1000.0;  
     
     // calculate the new longitude
     double newLng = longitude + (kilometers / longitudeConstant(latitude));
@@ -216,7 +216,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / 1000;  
+    float kilometers = distance / (float)1000;  
     
     // calculate the new longitude
     double newLng = longitude - (kilometers / longitudeConstant(latitude));

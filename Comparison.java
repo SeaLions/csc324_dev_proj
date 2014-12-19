@@ -53,19 +53,13 @@ public class Comparison
    
    private void compare()
    {
-      int gridSpacingDistance = 1000;//in meters
+      int gridSpacingDistance = 500;//in meters
 		float westBound = signalProData.getWestBound(),
             eastBound = signalProData.getEastBound(),
             northBound = signalProData.getNorthBound(),
             southBound = signalProData.getSouthBound();
-            
-      int width = (int)(CoordinateManager.distance(new Coordinate(northBound, westBound), new Coordinate(northBound, eastBound))/gridSpacingDistance);
-      int height = (int)(CoordinateManager.distance(new Coordinate(northBound, westBound), new Coordinate(southBound, westBound))/gridSpacingDistance);
-      System.out.println("Num points: " + width*height);
-            
 		Coordinate gridPoint = new Coordinate(southBound,westBound);
 		int row = 0;
-      int count = 0;
 		while (northBound - gridPoint.getLatitude() > 0) {
 			gridPoint.setLongitude(westBound);
 			while (eastBound - gridPoint.getLongitude() > 0) {
@@ -85,9 +79,6 @@ public class Comparison
             addKMLPoint(gridPoint);
             
 				gridPoint = CoordinateManager.addDistanceEast(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
-            ++count;
-            if (count%300 == 0)
-               System.out.println(count);
 			}
 			gridPoint = CoordinateManager.addDistanceNorth(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
 			++row;
