@@ -65,7 +65,7 @@ public class SignalProData extends PlotData
 // 			{
 //             float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
 //             float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
-// 				System.out.print(isCoverageNear(curLon, curLat, 200) == true ? 'X' : ' ');
+// 				System.out.print(isCoverageNear(new Coordinate(curLat,curLon), 500) == true ? 'X' : ' ');
 // 			}
 // 			System.out.println();
 // 		} 
@@ -79,7 +79,7 @@ public class SignalProData extends PlotData
 			int width = pngImage.getWidth();
 			
 			coverage = new ArrayList<ArrayList<Boolean>>();
-						
+			
 			for (int i = 0; i < height; i++)
 			{
 				coverage.add(new ArrayList<Boolean>());
@@ -120,6 +120,8 @@ public class SignalProData extends PlotData
 					break;					
 				}
 			}
+         
+         // printForDemo();
       }
       catch (IOException e) {
 			System.out.println(e);
@@ -140,8 +142,8 @@ public class SignalProData extends PlotData
 		
       /*
       left/right/lower/upper are named for spatial orientation.
-      "coverage" 2-d array is west-to-east increasing row indices,
-                              north-to-south increasing column indices.
+      "coverage" 2-d array is left-to-right increasing row indices,
+                              upper-to-lower increasing column indices.
       */
       
 		int leftPixelBound = centerPixelLon - pixelRadiusLon;
@@ -180,7 +182,7 @@ public class SignalProData extends PlotData
 	}
 	
 	private int nearestPixelToLatitude(float latitude) {
-		return (int) ( (latitude - southCoord)/(northCoord - southCoord)*(float)coverage.size() ) ;
+      return (int) ( (latitude - southCoord)/(northCoord - southCoord)*(float)coverage.size() ) ;
 	}
    
    private float centerLatOfPixel(int pixelRow) {

@@ -1,3 +1,5 @@
+
+
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -7,302 +9,265 @@ import org.w3c.dom.*;
 
 public class RfpsData extends PlotData
 {
-   private double BEARING_COUNTER = 0;
-   final private int ALL_BEARINGS=360;
-   private Vector<Vector<String>> rfpsStringBearingVector = new Vector<Vector<String>>(ALL_BEARINGS);
-   Vector<String> rfpsStringCoordinatesVector; 
-   Vector<double[]> PTSarr = new Vector<double[]>();
-   Vector<Vector<double[]>> rfpsDoubleCoordinateVector=new Vector<Vector<double[]>>();
-   double[][][]finalArray=new double[360][1000][2];
-   Coordinate center;
+   
+   private ArrayList<Double> bearingDegrees;
+   private ArrayList<ArrayList<CoordinateLine>> coverage;
+   private Coordinate center;
+   private int computationalRangeInMeters;
+   
    public RfpsData()
    {
       super();
+      bearingDegrees = new ArrayList<Double>();
+      coverage = new ArrayList<ArrayList<CoordinateLine>>();
+      center = new Coordinate(0,0);
+      computationalRangeInMeters = 0;
    }
-	
-   public Vector<Vector<String>> getData()
-   {
-      return rfpsStringBearingVector;
+   
+   public int getComputationalRangeInMeters() { return computationalRangeInMeters; }
+   
+   public Coordinate getCenter() { return new Coordinate(center.getLatitude(), center.getLongitude()); }
+   
+   private void readComputationalArea(Node compAreaFolder) {
+      
+      String centerAndRange = null;
+      
+      NodeList compAreaFolderChildren = compAreaFolder.getChildNodes();
+      for (int i = 0; i < compAreaFolderChildren.getLength(); ++i) {
+         Node curNode = compAreaFolderChildren.item(i);
+         if (curNode.getNodeName() != null && curNode.getNodeName().equals("description")) {
+            centerAndRange = curNode.getTextContent();
+            break;
+         }
+      }
+      
+      StringTokenizer tokenizer = new StringTokenizer(centerAndRange);
+      
+      //throw away "Center:"
+      tokenizer.nextToken();
+      
+      //get longitude
+      String centerLonString = tokenizer.nextToken();
+      char dirChar = centerLonString.charAt(centerLonString.length()-1);
+      centerLonString = centerLonString.substring(0, centerLonString.length()-1);
+      if (dirChar == 'W')
+         centerLonString = "-" + centerLonString;
+      center.setLongitude(Float.parseFloat(centerLonString));
+      
+      //throw away "-"
+      tokenizer.nextToken();
+      
+      String centerLatString = tokenizer.nextToken();
+      dirChar = centerLatString.charAt(centerLatString.length()-1);
+      centerLatString = centerLatString.substring(0, centerLatString.length()-1);
+      if (dirChar == 'S')
+         centerLatString = "-" + centerLatString;
+      center.setLatitude(Float.parseFloat(centerLatString));
+      
+      //throw away "Range" and "Extent:"
+      tokenizer.nextToken();
+      tokenizer.nextToken();
+      
+      computationalRangeInMeters = (int)Math.floor(Float.parseFloat(tokenizer.nextToken())*1000);
+      
    }
-  
+   
+   private void readCoverage(Node coverageFolder) {
+      //get folder containing bearing information
+      NodeList coverageFolderChildren = coverageFolder.getChildNodes();
+      Node topFolder = null;
+      for (int i = 0; i < coverageFolderChildren.getLength(); ++i) {
+         Node curNode = coverageFolderChildren.item(i);
+         if (curNode.getNodeName() != null && curNode.getNodeName().equals("Folder")) {
+            topFolder = curNode;
+            break;
+         }
+      }
+      
+      //each subfolder is a bearing; for each subfolder, read a bearing
+      NodeList bearings = topFolder.getChildNodes();
+      for (int i = 0; i < bearings.getLength(); ++i) {
+         Node bearing = bearings.item(i);
+         if (bearing.getNodeName() != null && bearing.getNodeName().equals("Folder"))
+            addBearing(bearing);
+      }
+      
+   }
+   
+   private void addBearing(Node bearingFolder) {
+      //get name tag with bearing information
+      Node bearingInfoNode = null;
+      NodeList bearingFolderChildren = bearingFolder.getChildNodes();
+      for (int i = 0; i < bearingFolderChildren.getLength(); ++i) {
+         Node curNode = bearingFolderChildren.item(i);
+         if (curNode.getNodeName() != null && curNode.getNodeName().equals("name")) {
+            bearingInfoNode = curNode;
+            break;
+         }
+      }
+      
+      bearingDegrees.add(getBearingDegrees(bearingInfoNode));
+      
+      coverage.add(new ArrayList<CoordinateLine>());
+      Node coordinateLineNode = bearingInfoNode.getNextSibling();
+      while (coordinateLineNode != null) {
+         if (coordinateLineNode.getNodeName() != null && coordinateLineNode.getNodeName().equals("Placemark")) {
+            coverage.get(coverage.size() - 1).add(getCoordinateLine(coordinateLineNode));
+         }
+         coordinateLineNode = coordinateLineNode.getNextSibling();
+         
+      }
+      
+   }
+   
+   private double getBearingDegrees(Node bearingInfoNode) {
+      String bearingInfoString = bearingInfoNode.getTextContent();
+      StringTokenizer tokenizer = new StringTokenizer(bearingInfoString);
+      
+      //throw away "Bearing" and "-"
+      tokenizer.nextToken();
+      tokenizer.nextToken();
+      
+      return Double.parseDouble(tokenizer.nextToken());
+   }
+   
+   private CoordinateLine getCoordinateLine(Node coordinateLineNode) {
+      Node lineString = null, coordinates = null;
+      Node curNode = coordinateLineNode.getFirstChild();
+      while (curNode != null) {
+         if (curNode.getNodeName() != null && curNode.getNodeName().equals("LineString")) {
+            lineString = curNode;
+            break;
+         }
+         curNode = curNode.getNextSibling();
+      }
+      
+      String coordinatesTextContent = null;
+      curNode = lineString.getFirstChild();
+      while (curNode != null) {
+         if (curNode.getNodeName() != null && curNode.getNodeName().equals("coordinates")) {
+            coordinatesTextContent = curNode.getTextContent();
+         }
+         curNode = curNode.getNextSibling();
+      }
+      
+      String[] tokens = coordinatesTextContent.split(",| ");
+      Coordinate c1 = new Coordinate(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[0]));//tokens[1]=latitude
+      Coordinate c2 = new Coordinate(Float.parseFloat(tokens[4]), Float.parseFloat(tokens[3]));
+      
+      return new CoordinateLine(c1,c2);
+      
+   }
+   
    public void readData(File rfpsFile)
    {
+      
 		try
 		{
+         
          DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
          DocumentBuilder db = dbf.newDocumentBuilder(); 
-			Document dom = db.parse(rfpsFile);
-      
-      
-      NodeList folderNodeList = dom.getElementsByTagName("Folder");
-      
-      //Loop through each <folder> tag element and look at each subtag
-         for (int i = 0; i < folderNodeList.getLength(); i++)
-         {
-             //Get a <folder> node
-             Node folderSubNode = folderNodeList.item(i);
-             Element folderElement = (Element)folderSubNode;
-             //get the first 'name' element of the <folder> tag 
-             Node nameNode = folderElement.getElementsByTagName("name").item(0);
-             rfpsStringCoordinatesVector = new Vector<String>();
-             if(nameNode.getTextContent().contains("Bearing"))
-             {
-                //get the child nodes of the <folder> tag
-                NodeList folderSubNodeList = folderSubNode.getChildNodes();
-                rfpsStringCoordinatesVector = new Vector<String>();
-                //For the number of child nodes in that <folder> tag
-                for (int x = 0; x < folderSubNodeList.getLength(); x++)
-                {    
-                    
-                   //grab a child node from the <folder> tag
-                   Node testNode = folderSubNodeList.item(x);
-                   
-                   //testing to see if Folder has "Placemark value and seeing if name of that placemark identifies it as a Bearing 
-                   if(testNode.getNodeName() == "Placemark")
-                   {
-                      
-                      NodeList placeMarkChildren = testNode.getChildNodes();
-                      
-                      for (int j = 0; j < placeMarkChildren.getLength(); j++)
-                      {
-                        
-                        Node placemarkSubNode = placeMarkChildren.item(j);
-                         
-                        //If the subtag of <Placemark> is <LineString>, get the coordinates and put them in a vector
-                        if (placemarkSubNode.getNodeName() == "LineString") 
-                        {  
-                          
-                           NodeList childNodesOfLineString = placemarkSubNode.getChildNodes();
-                           
-                           for (int k = 0; k < childNodesOfLineString.getLength(); k++)
-                           {
-                              Node lineStringSubNode = childNodesOfLineString.item(k);
-                              
-   									/*If subnodes of <LineString> is <coordinates>, append the values to the 
-   									string vector and then append the string vector to the bearing vector*/
-                              if (lineStringSubNode.getNodeName() == "coordinates")
-                              {   
-                                 rfpsStringCoordinatesVector.add(lineStringSubNode.getTextContent()); 
-                                 
-                              }    
-                           }
-                        }  
-                     }//End of third for loop   
-                  }//End of first if statement   
-                }//End second for loop    
-              }//end of if statement to ensure folder is of type bearing
-               if(rfpsStringBearingVector.size() != 400 && !rfpsStringCoordinatesVector.isEmpty())
-               {
-                  rfpsStringBearingVector.add(rfpsStringCoordinatesVector);
-                  
-               }       
-          }//end of loop that goes through all folders
+         Document dom = db.parse(rfpsFile);
+         
+         //get coverage and computational area nodes
+         Node coverageFolder = null, computationalAreaFolder = null;
+         NodeList nameNodes = dom.getElementsByTagName("name");
+         for (int i = 0; i < nameNodes.getLength(); ++i) {
+            Node curNameNode = nameNodes.item(i);
+            switch(curNameNode.getTextContent()) {
+            case "Coverage":
+               coverageFolder = curNameNode.getParentNode();
+               break;
+            case "Computational Area":
+               computationalAreaFolder = curNameNode.getParentNode();
+               break;
+            }
+            if (coverageFolder != null && computationalAreaFolder != null)
+               break;
+         }
+         
+         readComputationalArea(computationalAreaFolder);
+         
+         readCoverage(coverageFolder);
+         
+//          printData();
+         
       }//End try
-      catch(Exception e)
-      {
-       e.printStackTrace();  
+      catch(Exception e) {
+         e.printStackTrace();
       }
-    
-    
-      parseData();
-      createCenter();
-   }
-   
-   //find center point
-   public void createCenter()
-   {
-      double sumLat=0;
-      double sumLon=0;
-      for(int i=0;i<360;i++)
-      {
-         sumLat+=finalArray[i][0][0];
-         sumLon+=finalArray[i][0][1];
-      }
-      center=new Coordinate((float)(sumLat/360.0),(float)(sumLon/360.0));
-   }
-   
-    private void parseData()
-    {
-       
-       for(int largeLoop=0;largeLoop<360;largeLoop++)
-       {
-          //a master iterator for this largeLoop iteration
-          int master=0;
-          for(int j=0;j<rfpsStringBearingVector.get(largeLoop).size();j++)
-          {
-             //initialize variables needed for primary loop's current iteration
-             Vector<double[]> PTSarr = new Vector<double[]>();
-             double[][] endPTS = new double [2][2];
-             //convert String data to Double values
-             endPTS=parseString(rfpsStringBearingVector.get(largeLoop).get(j));
-             //calculate the changes in latitude and longetude
-             double Dlat= endPTS[0][1]-endPTS[0][0];
-             double Dlon= endPTS[1][1]-endPTS[1][0];
-             //calculate the lengths of the three sides
-             double distH=distance(endPTS[0][0],endPTS[1][0],endPTS[0][1],endPTS[1][1]);
-             double distA=distance(endPTS[0][0],endPTS[1][0],endPTS[0][0],endPTS[1][1]);
-             double distO=distance(endPTS[0][0],endPTS[1][1],endPTS[0][1],endPTS[1][1]);
-             //calculate the number of partitions
-             int partitions=(int)(distH/100);
-             //calculate the angle for the point used as an origin
-             double angle = Fangle(distO,distA);
-             //initialize first point
-             double[] firstPoint = new double[2];
-             firstPoint[0]=endPTS[0][0];
-             firstPoint[1]=endPTS[1][0];
-             PTSarr.add(firstPoint);
-             
-             //iterator
-             int it;
-             //per iteration lat and lon change
-             double dLatPit=(100/distH)*Dlat;
-             double dLonPit=(100/distH)*Dlon;
-             //current segment's loop
-             for(int i=partitions;i>0;i--)
-             {
-                //set iterator value
-                it=partitions-i;
-                master++;
-                //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon)
-                PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit));
-             }
-             for(int i=0;i<partitions;i++)
-             {
-                finalArray[largeLoop][master][0]=PTSarr.get(i)[0];
-                finalArray[largeLoop][master][1]=PTSarr.get(i)[1];
-             }
-          }
-       }
-       
-    }
-    
-   
-      
-
-    //calculate new x
-   private double metersXcalc(double angle, double distance)
-   {
-      angle=90-angle;
-      return distance*Math.sin(angle);
-   }
-   
-   //calculate new y
-   private double metersYcalc(double angle, double distance)
-   {
-      return 100*Math.sin(angle);
-   }
-   
-   //find angle
-   public double Fangle(double Opposite,double Adjacent)
-   {
-      return Math.asin(Opposite/Adjacent);
-   }
-   
-   //parse the current string into 4 doubles and returns the array
-   private double[][] parseString(String current)
-   {
-      double Tlat1=Double.parseDouble( current.substring(0 , current.indexOf(',') ) );
-      current=current.substring( current.indexOf(',')+1,current.length() );
-      double Tlon1=Double.parseDouble( current.substring(0 , current.indexOf(',') ) );
-      current=current.substring( current.indexOf(',')+1,current.length() );
-      current=current.substring( current.indexOf(' ')+1,current.length() );
-      double Tlat2=Double.parseDouble( current.substring(0 , current.indexOf(',') ) );
-      current=current.substring( current.indexOf(',')+1,current.length() );
-      double Tlon2=Double.parseDouble( current.substring(0 , current.indexOf(',') ) );
-      double[][] endPTS = new double [2][2];
-      endPTS[0][0]=Tlat1;
-      endPTS[0][1]=Tlat2;
-      endPTS[1][0]=Tlon1;
-      endPTS[1][1]=Tlon2;
-      return endPTS;
-   }
-   
-   //gets the current point in the partition iteration
-   private double[] getPoint(double lat, double lon,double Dlat, double Dlon)
-   {
-      double[] arr= new double[2];
-      arr[0]=lat+Dlat;
-      arr[1]=lon+Dlon;
-      return arr;
-   }
-
-   //calculates distance between two gps coords
-   private double distance(double lat1, double lon1, double lat2, double lon2)
-   {
-      double theta = lon1 - lon2;
-      double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-      dist = Math.acos(dist);
-	   dist = rad2deg(dist);
-      dist = dist * 60 * 1.1515;
-   //calculates distance in meters
-         dist = dist * 1609.344;
-
-      return (dist);
-   }
-   //converts degrees to radians
-   private double deg2rad(double deg)
-   {
-      return (deg * Math.PI / 180.0);
-   }
-   //converts radians to degrees
-   private double rad2deg(double rad)
-   {
-      return (rad * 180 / Math.PI);
    }
    
    //method to compare coverageNearPoint
    public boolean isCoverageNear(Coordinate coord, int distanceMeters)
    {
-      Coordinate myCoord;
-      int radial=getRadial(coord);
+      double distance = CoordinateManager.distance(center, coord);
       
-//      for(int i=0;i<360;i++)
-//      {
-         for(int j=0;j<1000;j++)
-         {
-            myCoord = new Coordinate((float)finalArray[radial][j][1], (float)finalArray[radial][j][0]);
-//             if(myCoord.getLatitude()!=0)
-//                 System.out.println(myCoord.getLatitude()+" "+myCoord.getLongitude());
-             if(CoordinateManager.distance(coord, myCoord)<=distanceMeters && (myCoord.getLatitude()!=0 || myCoord.getLongitude()!=0))
-             {
-                   return true;
-             }
-             myCoord = new Coordinate((float)finalArray[radial+1][j][1], (float)finalArray[radial+1][j][0]);
-//             if(myCoord.getLatitude()!=0)
-//                 System.out.println(myCoord.getLatitude()+" "+myCoord.getLongitude());
-             if(CoordinateManager.distance(coord, myCoord)<=distanceMeters && (myCoord.getLatitude()!=0 || myCoord.getLongitude()!=0))
-             {
-                   return true;
-             }
+      if (distance <= distanceMeters) {
+         int maxDist = distanceMeters + (int)distance;
+         for (int i = 0; i < coverage.size(); ++i) {
+            CoordinateLine firstLine = coverage.get(i).get(0);
+            if (CoordinateManager.distance(firstLine.getCoordinate(0), coord) <= distanceMeters)
+               return true;
          }
-//      }
+      }
+      else {
+         double bearing = CoordinateManager.bearing(center, coord);
+         int closestBearingIndex = -1;
+         int max = bearingDegrees.size(), min = 0;
+         while (max - min > 0) {
+            int mid = (max+min)/2;
+            double deg = bearingDegrees.get(mid);
+            if (deg < bearing)
+               min = mid+1;
+            else max = mid-1;
+         }
+         closestBearingIndex = min;
+         
+         //search the closest three bearings (change later)
+         int searchBearing = (closestBearingIndex+coverage.size())%coverage.size();
+         while (searchBearing != (closestBearingIndex+1)%coverage.size()) {
+            ArrayList<CoordinateLine> curBearing = coverage.get(searchBearing);
+            for (int i = 0; i < curBearing.size(); ++i) {
+               CoordinateLine curLine = curBearing.get(i);
+               double d1 = CoordinateManager.distance(curLine.getCoordinate(0), center),
+                      d2 = CoordinateManager.distance(curLine.getCoordinate(1), center);
+               if ((d1 <= distance && d2 <= distance) || (d1 >= distance && d2 >= distance)) {
+                  if (CoordinateManager.distance(curLine.getCoordinate(0), coord) <= distanceMeters
+                      || CoordinateManager.distance(curLine.getCoordinate(1), coord) <= distanceMeters)
+                      return true;
+               }
+//                else if (d1 <= distance && d2 >= distance || d1 >= distance && d1 <= distance) {
+//                   return true;
+//                }
+            }
+            searchBearing = (searchBearing+1)%coverage.size();
+         }
+      }
       return false;
    }
-   //method for finding the radial
-   public int getRadial(Coordinate coord)
-   {
-      float x = Math.abs(coord.getLongitude()-center.getLongitude());
-      float y = Math.abs(coord.getLatitude()-center.getLatitude());
-      double angle;
-      if(x >= 0 && y >= 0)
-      {
-         angle = Math.atan(x/y);
+   
+   public boolean inRange(Coordinate coord) {
+      return CoordinateManager.distance(coord, center) <= (double)computationalRangeInMeters;
+   }
+   
+   public void printData() {
+      System.out.println("Range: " + computationalRangeInMeters + " (m)");
+      System.out.println("Center: " + center.toString());
+      System.out.println("Bearing Count: " + bearingDegrees.size());
+      for (int i = 0; i < bearingDegrees.size(); ++i) {
+         System.out.print(bearingDegrees.get(i) + ",");
       }
-      else if(x >= 0 && y < 0)
-      {
-         angle = 90+Math.atan(y/x);
+      System.out.println();
+      
+      for (int bearing = 0; bearing < coverage.size(); ++bearing) {
+         System.out.println("Bearing " + bearingDegrees.get(bearing) + ": ");
+         for (int line = 0; line < coverage.get(bearing).size(); ++line) {
+            CoordinateLine cl = coverage.get(bearing).get(line);
+            System.out.print(cl.getCoordinate(0).toString() + "->" + cl.getCoordinate(1).toString() + ", ");
+         }
+         System.out.println();
       }
-      else if(x < 0 && y >= 0)
-      {
-         angle = 270+Math.atan(y/x);
-      }
-      else
-      {
-         angle = 180+Math.atan(x/y);
-      }
-      return (int)angle;
    }
    
 }//End class
-
-
