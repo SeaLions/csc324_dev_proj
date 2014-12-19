@@ -109,18 +109,23 @@ class CoordinateManager {
    * @return the great-circle distance between the two lat/lon points
    */
   public static double distance(Coordinate c1, Coordinate c2) {
-      float lat1,lat2,lon1,lon2;
-      lat1 = c1.getLatitude();
-      lon1 = c1.getLongitude();
-      lat2 = c2.getLatitude();
-      lon2 = c2.getLongitude();
-      double dLat = Math.toRadians(lat2-lat1);  
-      double dLon = Math.toRadians(lon2-lon1);  
+      double dLat = Math.toRadians(c2.getLatitude()-c1.getLatitude());  
+      double dLon = Math.toRadians(c2.getLongitude()-c1.getLongitude());  
       double a = Math.sin(dLat/2) * Math.sin(dLat/2) +  
-         Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);  
+         Math.cos(Math.toRadians(c1.getLatitude())) * Math.cos(Math.toRadians(c2.getLatitude())) * Math.sin(dLon/2) * Math.sin(dLon/2);  
       double c = 2 * Math.asin(Math.sqrt(a));  
       return (double)EARTH_DIAMETER/2.0*1000.0 * c;  
   }
+  
+   public static double bearing(Coordinate c1, Coordinate c2){
+     double latitude1 = Math.toRadians(c1.getLatitude());
+     double latitude2 = Math.toRadians(c2.getLatitude());
+     double longDiff= Math.toRadians(c2.getLongitude()-c1.getLongitude());
+     double y= Math.sin(longDiff)*Math.cos(latitude2);
+     double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
+   
+     return (Math.toDegrees(Math.atan2(y, x))+360.0)%360.0;
+   }
   
   /**
    * A method to add distance in a northerly direction to a coordinate
@@ -139,7 +144,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / new Float(1000);  
+    float kilometers = distance / (float)1000.0;  
     
     // calculate the new latitude
     double newLat = latitude + (kilometers / latitudeConstant());
@@ -165,7 +170,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / new Float(1000);
+    float kilometers = distance / (float)1000.0;
     
     // calculate the new latitude
     double newLat = latitude - (kilometers / latitudeConstant());
@@ -191,12 +196,11 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / 1000;  
+    float kilometers = distance / (float)1000;  
     
     // calculate the new longitude
-    double newLng = longitude + (distance / longitudeConstant(latitude));
-    
-    return new Coordinate(latitude, new Float(newLng).floatValue());  
+    double newLng = longitude + (kilometers / longitudeConstant(latitude));
+    return new Coordinate(latitude, new Float(newLng).floatValue());
   }
   
   /**
@@ -216,10 +220,10 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / 1000;  
+    float kilometers = distance / (float)1000.0;  
     
     // calculate the new longitude
-    double newLng = longitude - (distance / longitudeConstant(latitude));
+    double newLng = longitude - (kilometers / longitudeConstant(latitude));
     
     return new Coordinate(latitude, new Float(newLng).floatValue());  
   }
@@ -241,7 +245,7 @@ class CoordinateManager {
     }
     
     // convert the distance from metres to kilometers
-    float kilometers = distance / 1000;  
+    float kilometers = distance / (float)1000.0;  
     
     // declare helper variables
     java.util.HashMap<String, Coordinate> boundingBox = new java.util.HashMap<String, Coordinate>();

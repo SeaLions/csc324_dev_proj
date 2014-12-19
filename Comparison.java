@@ -61,7 +61,7 @@ public class Comparison
 	
    private void compare()
    {
-		int gridSpacingDistance = 100;//in meters
+		int gridSpacingDistance = 1000;//in meters
 		float westBound = signalProData.getWestBound(),
             eastBound = signalProData.getEastBound(),
             northBound = signalProData.getNorthBound(),
@@ -78,8 +78,9 @@ public class Comparison
             coverageGrid.add(new CoveragePoint(gridPoint, coverageType));
 				gridPoint = CoordinateManager.addDistanceEast(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
 //             ++count;
+//             if (count%100 == 0)
+//                System.out.println(count);
 			}
-//          System.out.println(count);
 			gridPoint = CoordinateManager.addDistanceSouth(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
 			++row;
 		}

@@ -11,8 +11,8 @@ import org.xml.sax.SAXException;
 public class SignalProData extends PlotData
 {
 	
-	ArrayList<ArrayList<Boolean>> coverage;//first dimension is latitude, second is longitude
-	float northCoord, southCoord, eastCoord, westCoord;
+	private ArrayList<ArrayList<Boolean>> coverage;//first dimension is latitude, second is longitude
+	private float northCoord, southCoord, eastCoord, westCoord;
 	
 	
    public SignalProData()
@@ -57,14 +57,14 @@ public class SignalProData extends PlotData
    }
    
 //    public void printForDemo() {
-// 		double pixelUnitLat = (northCoord - southCoord)/coverage.get(0).size();
-// 		double pixelUnitLon = (eastCoord - westCoord)/coverage.get(0).size();
+// 		float pixelUnitLat = (northCoord - southCoord)/coverage.get(0).size();
+// 		float pixelUnitLon = (eastCoord - westCoord)/coverage.get(0).size();
 // 		for (int i = 0; i < coverage.size(); i++)
 // 		{
 // 			for (int j = 0; j < coverage.get(i).size(); j++)
 // 			{
-//             double curLon = westCoord + j/(double)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
-//             double curLat = southCoord + i/(double)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
+//             float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
+//             float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
 // 				System.out.print(isCoverageNear(curLon, curLat, 200) == true ? 'X' : ' ');
 // 			}
 // 			System.out.println();
@@ -95,7 +95,7 @@ public class SignalProData extends PlotData
 			
 		}
 		catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
    
@@ -140,8 +140,8 @@ public class SignalProData extends PlotData
 		
       /*
       left/right/lower/upper are named for spatial orientation.
-      "coverage" 2-d array is left-to-right increasing row indices,
-                              upper-to-lower increasing column indices.
+      "coverage" 2-d array is west-to-east increasing row indices,
+                              north-to-south increasing column indices.
       */
       
 		int leftPixelBound = centerPixelLon - pixelRadiusLon;
@@ -155,41 +155,41 @@ public class SignalProData extends PlotData
 			 || rightPixelBound < 0
 			 || leftPixelBound >= coverage.get(0).size())
 			return false;
+      
 		for (int i = upperPixelBound; i <= lowerPixelBound; ++i) {
-			if (i < 0 || i >= coverage.size()) continue;
-			for (int j = leftPixelBound; j <= rightPixelBound; ++j) {
+			
+         if (i < 0 || i >= coverage.size()) continue;
+			
+         for (int j = leftPixelBound; j <= rightPixelBound; ++j) {
+            
             if (j < 0 || j >= coverage.get(0).size()) continue;
-            float curLon = westCoord + j/(float)coverage.get(0).size()*(eastCoord-westCoord) + pixelUnitLon/2;
-            float curLat = southCoord + i/(float)coverage.size()*(northCoord-southCoord) + pixelUnitLat/2;
+            
+            float curLon = centerLonOfPixel(j);
+            float curLat = centerLatOfPixel(i);
 				if (CoordinateManager.distance(loc, new Coordinate(curLat,curLon)) <= radiusInMeters && coverage.get(i).get(j))
 					return true;
+            
 			}
 		}
       
 		return false;
 	}
 	
-	private int nearestPixelToLongitude(double longitude) {
-		double pixelUnit = (eastCoord - westCoord)/coverage.get(0).size();
-		double pixelLongitude = westCoord;
-		for (int pixel = 0; pixel < coverage.get(0).size(); ++pixel) {
-			if (pixelLongitude + pixelUnit > longitude)
-				return pixel;
-         pixelLongitude = westCoord + pixel/(double)coverage.get(0).size()*(eastCoord-westCoord);
-		}
-		return -1;
+	private int nearestPixelToLongitude(float longitude) {
+      return (int) ( (longitude - westCoord)/(eastCoord - westCoord)*(float)coverage.get(0).size() ) ;
 	}
 	
-	private int nearestPixelToLatitude(double latitude) {
-		double pixelUnit = (northCoord - southCoord)/coverage.size();
-		double pixelLatitude = southCoord;
-		for (int pixel = 0; pixel < coverage.size(); ++pixel) {
-			if (pixelLatitude + pixelUnit > latitude)
-				return pixel;
-         pixelLatitude = southCoord + pixel/(double)coverage.size()*(northCoord-southCoord);
-		}
-		return -1;
+	private int nearestPixelToLatitude(float latitude) {
+		return (int) ( (latitude - southCoord)/(northCoord - southCoord)*(float)coverage.size() ) ;
 	}
+   
+   private float centerLatOfPixel(int pixelRow) {
+      return southCoord + Math.signum(pixelRow)*pixelRow/(float)coverage.size()*(northCoord-southCoord);
+   }
+   
+   private float centerLonOfPixel(int pixelCol) {
+      return westCoord + Math.signum(pixelCol)*pixelCol/(float)coverage.get(0).size()*(eastCoord-westCoord);
+   }
    
    public float getNorthBound() { return northCoord; }
    
