@@ -245,7 +245,7 @@ public class RfpsData extends PlotData
          {
             if(finalArray[i][j][0]!=0)
                System.out.println(finalArray[i][j][0]+" "+finalArray[i][j][1]+" "+coord.getLatitude()+" "+coord.getLongitude());
-            if(distance(finalArray[i][j][0],finalArray[i][j][1],coord.getLatitude(),coord.getLongitude())<=distanceMeters && (finalArray[i][j][0]!=0 || finalArray[i][j][1]!=0))
+            if(distance(finalArray[i][j][0],finalArray[i][j][1],coord.getLongitude(),coord.getLatitude())<=distanceMeters && (finalArray[i][j][0]!=0 || finalArray[i][j][1]!=0))
             {
                return true;
             }
