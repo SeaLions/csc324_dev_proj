@@ -45,81 +45,53 @@ public class Comparison
       inconclusiveString = "";
       
       compare();
+      
+      createKmlOutputFile();
    }
    
       //--------------------------------------------------------------------------------------------------------------------------------------- change zone open
    
    private void compare()
    {
-      rfps=rfpsData.getData();
-      for(int largeLoop=0;largeLoop<360;largeLoop++)
-      {
-         //a master iterator for this largeLoop iteration
-         int master=0;
-         for(int j=0;j<rfps.get(largeLoop).size();j++)
-         {
-            //initialize variables needed for primary loop's current iteration
-            Vector<double[]> PTSarr = new Vector<double[]>();
-            double[][] endPTS = new double [2][2];
-            //convert String data to Double values
-            endPTS=parseString(rfps.get(largeLoop).get(j));
-            //calculate the changes in latitude and longetude
-            double Dlat= endPTS[0][1]-endPTS[0][0];
-            double Dlon= endPTS[1][1]-endPTS[1][0];
-            //calculate the lengths of the three sides
-            double distH=distance(endPTS[0][0],endPTS[1][0],endPTS[0][1],endPTS[1][1],'K')*1000;
-            double distA=distance(endPTS[0][0],endPTS[1][0],endPTS[0][0],endPTS[1][1],'K')*1000;
-            double distO=distance(endPTS[0][0],endPTS[1][1],endPTS[0][1],endPTS[1][1],'K')*1000;
-            //calculate the number of partitions
-            int partitions=(int)(distH/100);
-            //calculate the angle for the point used as an origin
-            double angle = Fangle(distO,distA);
-            //initialize first point
-            double[] firstPoint = new double[2];
-            firstPoint[0]=endPTS[0][0];
-            firstPoint[1]=endPTS[1][0];
-            PTSarr.add(firstPoint);
+      int gridSpacingDistance = 1000;//in meters
+		float westBound = signalProData.getWestBound(),
+            eastBound = signalProData.getEastBound(),
+            northBound = signalProData.getNorthBound(),
+            southBound = signalProData.getSouthBound();
             
-            //iterator
-            int it;
-            //per iteration lat and lon change
-            double dLatPit=(100/distH)*Dlat;
-            double dLonPit=(100/distH)*Dlon;
-            //current segment's loop
-            for(int i=partitions;i>0;i--)
-            {
-               //set iterator value
-               it=partitions-i;
-               master++;
-               //getPoint(double currentBaseLatitude, double currentBaseLongitude,double Dlat, double Dlon,double angle, double distanceChangeFromOrigin)
-               PTSarr.add(getPoint(PTSarr.get(it)[0], PTSarr.get(it)[1], dLatPit, dLonPit, angle, distH, it));
-            }
-//             System.out.println("-------------------"+partitions+"--------------------");
-            for(int i=0;i<partitions;i++)
-            {
-               //test-----
-//                System.out.println("["+largeLoop+"]["+master+"] - "+i+" - "+PTSarr.size());
-               
-               boolean correlation=signalProData.isCoverageNear(PTSarr.get(i)[1],PTSarr.get(i)[0],100);
-               
-               afterCompare[largeLoop][master][0]=PTSarr.get(i)[0];
-               afterCompare[largeLoop][master][1]=PTSarr.get(i)[1];
-               
-               if(correlation)
-                  afterCompare[largeLoop][master][2]=1;
+      int width = (int)(CoordinateManager.distance(new Coordinate(northBound, westBound), new Coordinate(northBound, eastBound))/gridSpacingDistance);
+      int height = (int)(CoordinateManager.distance(new Coordinate(northBound, westBound), new Coordinate(southBound, westBound))/gridSpacingDistance);
+      System.out.println("Num points: " + width*height);
+            
+		Coordinate gridPoint = new Coordinate(southBound,westBound);
+		int row = 0;
+      int count = 0;
+		while (northBound - gridPoint.getLatitude() > 0) {
+			gridPoint.setLongitude(westBound);
+			while (eastBound - gridPoint.getLongitude() > 0) {
+            boolean rfpsCoversPoint = rfpsData.isCoverageNear(gridPoint, gridSpacingDistance/2);
+            boolean signalProCoversPoint = signalProData.isCoverageNear(gridPoint, gridSpacingDistance/2);
+            
+            int coverageType;
+            if (signalProCoversPoint ^ rfpsCoversPoint) {
+               if (signalProCoversPoint)
+                  coverageType = ONLY_SIGPRO;
                else
-                  afterCompare[largeLoop][master][2]=0;
-					
-					Coordinate temp = new Coordinate((float)afterCompare[largeLoop][master][1], (float)afterCompare[largeLoop][master][0]);
-					temp.setCoverage(correlation ? SAME : ONLY_RFPS);
-					addKMLPoint(temp);
+                  coverageType = ONLY_RFPS;
             }
-         }
-      }
-      
-      //signalProData.isCoverageNear(double longitude, double latitude);
-      
-      
+            else coverageType = SAME;
+            
+            gridPoint.setCoverage(coverageType);
+            addKMLPoint(gridPoint);
+            
+				gridPoint = CoordinateManager.addDistanceEast(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
+            ++count;
+            if (count%300 == 0)
+               System.out.println(count);
+			}
+			gridPoint = CoordinateManager.addDistanceNorth(gridPoint.getLatitude(), gridPoint.getLongitude(), gridSpacingDistance);
+			++row;
+		}
    }
    //calculate new x
    private double metersXcalc(double angle, double distance)

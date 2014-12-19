@@ -194,7 +194,7 @@ class CoordinateManager {
     float kilometers = distance / 1000;  
     
     // calculate the new longitude
-    double newLng = longitude + (distance / longitudeConstant(latitude));
+    double newLng = longitude + (kilometers / longitudeConstant(latitude));
     
     return new Coordinate(latitude, new Float(newLng).floatValue());  
   }
@@ -219,7 +219,7 @@ class CoordinateManager {
     float kilometers = distance / 1000;  
     
     // calculate the new longitude
-    double newLng = longitude - (distance / longitudeConstant(latitude));
+    double newLng = longitude - (kilometers / longitudeConstant(latitude));
     
     return new Coordinate(latitude, new Float(newLng).floatValue());  
   }
