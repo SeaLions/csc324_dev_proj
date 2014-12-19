@@ -199,8 +199,8 @@ public class Comparison
          case SAME:
             //coverage matches in signal pro and RFPS
             sameString+= "\t\t\t<Placemark>\n"+
-                     //"\t\t\t\t<name>Placemark 2</name>\n"+
-                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     //"\t\t\t\t<name>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</name>\n"+
+                     "\t\t\t\t<description>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_SAME</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
@@ -210,8 +210,8 @@ public class Comparison
          case ONLY_RFPS:
             //the coverage only in RFPS
    			diffRFPSString+= "\t\t\t<Placemark>\n"+
-                     //"\t\t\t\t<name>Placemark 2</name>\n"+
-                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     //"\t\t\t\t<name>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</name>\n"+
+                     "\t\t\t\t<description>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_ONLY_RFPS</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
@@ -221,8 +221,8 @@ public class Comparison
          case ONLY_SIGPRO:
             //the coverage only in signal pro
             diffSignalProString+= "\t\t\t<Placemark>\n"+
-                      //"\t\t\t\t<name>Placemark 2</name>\n"+
-                      //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                      //"\t\t\t\t<name>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</name>\n"+
+                      "\t\t\t\t<description>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</description>\n"+
                       "\t\t\t\t<styleUrl>#stylesel_ONLY_SIGPRO</styleUrl>\n"+
                       "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
@@ -232,8 +232,8 @@ public class Comparison
          case INCONCLUSIVE:
             //the coverage inconclusive
             inconclusiveString+= "\t\t\t<Placemark>\n"+
-                     //"\t\t\t\t<name>Placemark 2</name>\n"+
-                     //"\t\t\t\t<description>Development Team's Headquarters.</description>\n"+
+                     //"\t\t\t\t<name>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</name>\n"+
+                     "\t\t\t\t<description>"+newCoord.getLatitude()+","+newCoord.getLongitude()+"</description>\n"+
                      "\t\t\t\t<styleUrl>#stylesel_INCON</styleUrl>\n"+
                      "\t\t\t\t<Point>\n"+
                         "\t\t\t\t\t<coordinates>"+newCoord.getLongitude()+","+newCoord.getLatitude()+",0 </coordinates>\n"+
@@ -265,11 +265,15 @@ public class Comparison
       //Formating points with similar singal coverage for kml
       String finalSameString = folderStartTag+
                    "\t\t\t<Style id=\"stylesel_SAME\">\n"+
-                     "\t\t\t\t<LabelStyle>\n"+
+                     "\t\t\t\t<IconStyle>\n"+
                         "\t\t\t\t\t<color>FF00FF00</color>\n"+ //green
                         "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
-                        "\t\t\t\t\t<scale>1</scale>\n"+
-                     "\t\t\t\t</LabelStyle>\n"+
+                        "\t\t\t\t\t<scale>0.25</scale>\n"+ // scale of 1 is normalized to 32x32 pixels
+								"\t\t\t\t\t<Icon>\n"+
+									//<href>http://maps.google.com/mapfiles/kml/pal3/icon21.png</href>
+					            "\t\t\t\t\t\t<href>green_point_small.jpg</href>\n"+
+								"\t\t\t\t\t</Icon>\n"+
+                     "\t\t\t\t</IconStyle>\n"+
                    "\t\t\t</Style>\n"+
                    "\t\t\t<name>Similar Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is the same.</description>\n"+
@@ -279,11 +283,15 @@ public class Comparison
       //Formating points where only RFPS had singal coverage for kml
       String finalDiffRFPSString = folderStartTag+
                    "\t\t\t<Style id=\"stylesel_ONLY_RFPS\">\n"+
-                     "\t\t\t\t<LabelStyle>\n"+
+                     "\t\t\t\t<IconStyle>\n"+
                         "\t\t\t\t\t<color>FF3366FF</color>\n"+ //blue
                         "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
-                        "\t\t\t\t\t<scale>1</scale>\n"+
-                     "\t\t\t\t</LabelStyle>\n"+
+                        "\t\t\t\t\t<scale>0.25</scale>\n"+ // scale of 1 is normalized to 32x32 pixels
+								"\t\t\t\t\t<Icon>\n"+
+									//<href>http://maps.google.com/mapfiles/kml/pal3/icon21.png</href>
+					            "\t\t\t\t\t\t<href>blue_point_small.jpg</href>\n"+
+								"\t\t\t\t\t</Icon>\n"+
+                     "\t\t\t\t</IconStyle>\n"+
                    "\t\t\t</Style>\n"+
                    "\t\t\t<name>Similar Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is the same.</description>\n"+
@@ -295,11 +303,15 @@ public class Comparison
       //Formating points where only SignalPro had singal coverage for kml
       String finalDiffSignalProString = folderStartTag+
                    "\t\t\t<Style id=\"stylesel_ONLY_SIGPRO\">\n"+
-                     "\t\t\t\t<LabelStyle>\n"+
+                     "\t\t\t\t<IconStyle>\n"+
                         "\t\t\t\t\t<color>FF0000FF</color>\n"+ //red
                         "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
-                        "\t\t\t\t\t<scale>1</scale>\n"+
-                     "\t\t\t\t</LabelStyle>\n"+
+                        "\t\t\t\t\t<scale>0.25</scale>\n"+ // scale of 1 is normalized to 32x32 pixels
+								"\t\t\t\t\t<Icon>\n"+
+									//<href>http://maps.google.com/mapfiles/kml/pal3/icon21.png</href>
+					            "\t\t\t\t\t\t<href>orange_point_small.jpg</href>\n"+
+								"\t\t\t\t\t</Icon>\n"+
+                     "\t\t\t\t</IconStyle>\n"+
                    "\t\t\t</Style>\n"+
                    "\t\t\t<name>Difference in Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage only in SignalPro.</description>\n"+
@@ -309,11 +321,15 @@ public class Comparison
       //Formating points with inconclusive singal coverage for kml
       String finalInconclusiveString = folderStartTag+
                    "\t\t\t<Style id=\"stylesel_INCON\">\n"+
-                     "\t\t\t\t<LabelStyle>\n"+
+                     "\t\t\t\t<IconStyle>\n"+
                         "\t\t\t\t\t<color>FFFFFF00</color>\n"+ //yellow
                         "\t\t\t\t\t<colorMode>normal</colorMode>\n"+
-                        "\t\t\t\t\t<scale>1</scale>\n"+
-                     "\t\t\t\t</LabelStyle>\n"+
+                        "\t\t\t\t\t<scale>0.25</scale>\n"+ // scale of 1 is normalized to 32x32 pixels
+								"\t\t\t\t\t<Icon>\n"+
+									//<href>http://maps.google.com/mapfiles/kml/pal3/icon21.png</href>
+					            "\t\t\t\t\t\t<href>red_point_small.jpg</href>\n"+
+								"\t\t\t\t\t</Icon>\n"+
+                     "\t\t\t\t</IconStyle>\n"+
                    "\t\t\t</Style>\n"+
                    "\t\t\t<name>Inconclusive Coverage</name>\n"+
                    "\t\t\t<description>Signal Coverage is inconclusive.</description>\n"+
