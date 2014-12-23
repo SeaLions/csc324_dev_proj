@@ -45,11 +45,7 @@ public class Comparison
       inconclusiveString = "";
       
       compare();
-      
-      createKmlOutputFile();
    }
-   
-      //--------------------------------------------------------------------------------------------------------------------------------------- change zone open
    
    private void compare()
    {

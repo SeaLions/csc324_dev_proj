@@ -152,7 +152,7 @@ public class RfpsData extends PlotData
       }
       
       String[] tokens = coordinatesTextContent.split(",| ");
-      Coordinate c1 = new Coordinate(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[0]));//tokens[1]=latitude
+      Coordinate c1 = new Coordinate(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[0]));//tokens[1]=latitude,tokens[0]=longitude
       Coordinate c2 = new Coordinate(Float.parseFloat(tokens[4]), Float.parseFloat(tokens[3]));
       
       return new CoordinateLine(c1,c2);
@@ -190,15 +190,12 @@ public class RfpsData extends PlotData
          
          readCoverage(coverageFolder);
          
-//          printData();
-         
-      }//End try
+      }
       catch(Exception e) {
          e.printStackTrace();
       }
    }
    
-   //method to compare coverageNearPoint
    public boolean isCoverageNear(Coordinate coord, int distanceMeters)
    {
       double distance = CoordinateManager.distance(center, coord);
@@ -270,4 +267,4 @@ public class RfpsData extends PlotData
       }
    }
    
-}//End class
+}

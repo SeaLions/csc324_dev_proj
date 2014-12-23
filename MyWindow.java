@@ -20,7 +20,7 @@ public class MyWindow implements ActionListener {
  
    public MyWindow(){
       mainFrame = new JFrame("GPS Coordinate Comparison Program");
-      mainFrame.setSize(1200,1200);
+      mainFrame.setSize(600,600);
       mainFrame.setLayout(new GridBagLayout());
       mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
@@ -43,7 +43,7 @@ public class MyWindow implements ActionListener {
       GridBagConstraints constraints = new GridBagConstraints();
       constraints.anchor = GridBagConstraints.LINE_START;
       
-		rfpsFileChooseButton = new JButton("Input RFPS file");		//KML button
+		rfpsFileChooseButton = new JButton("Input RFPS file");
       rfpsFileChooseButton.addActionListener(this);
       constraints.gridx = 0;
       constraints.gridy = 0;
@@ -54,7 +54,7 @@ public class MyWindow implements ActionListener {
       constraints.gridy = 0;
       mainFrame.add(rfpsInputLabel, constraints);
 		
-		signalProChooseButton = new JButton("Input SignalPro file");	//KMZ button
+		signalProChooseButton = new JButton("Input SignalPro file");
 		signalProChooseButton.addActionListener(this);  
       constraints.gridx = 0;
       constraints.gridy = 1;
@@ -65,7 +65,7 @@ public class MyWindow implements ActionListener {
       constraints.gridy = 1;
       mainFrame.add(signalProInputLabel, constraints);
       
-   }//end showInputButton() function
+   }
 
 	private void setupOutputOptions() {
       
@@ -112,8 +112,7 @@ public class MyWindow implements ActionListener {
    }
    
    public void actionPerformed(ActionEvent e) {
-   
-      //Handle open button action.
+      
       if (e.getSource() == chooseOutputButton) {
          int returnVal = outputDirChooser.showOpenDialog(mainFrame);
          
